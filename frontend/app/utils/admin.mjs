@@ -54,3 +54,7 @@ export function buildAdminQuery(filters) {
     value !== '' && value !== null && value !== undefined
   )))
 }
+
+export function adminProductImage(product) {
+  return product?.images?.[0]?.url || '/images/products/cookie-placeholder.svg'
+}

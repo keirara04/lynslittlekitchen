@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  adminProductImage,
   buildAdminQuery,
   formatAdminCurrency,
   humanizeStatus,
@@ -35,4 +36,9 @@ test('keeps terminal side states outside successful progress', () => {
 test('humanizes API status labels', () => {
   assert.equal(humanizeStatus('out_for_delivery'), 'Out for delivery')
   assert.equal(humanizeStatus('paid'), 'Paid')
+})
+
+test('uses the first product image with a stable placeholder fallback', () => {
+  assert.equal(adminProductImage({ images: [{ url: 'https://images.example.test/cookie.jpg' }] }), 'https://images.example.test/cookie.jpg')
+  assert.equal(adminProductImage({ images: [] }), '/images/products/cookie-placeholder.svg')
 })

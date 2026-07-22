@@ -8,3 +8,4 @@ export function humanizeStatus(status: string | null | undefined): string
 export function progressIndex(status: string): number
 export function stockSummary(product: Pick<AdminProduct, 'stock' | 'variants'>): string
 export function buildAdminQuery(filters: Record<string, unknown>): Record<string, unknown>
+export function adminProductImage(product: Pick<AdminProduct, 'images'>): string
