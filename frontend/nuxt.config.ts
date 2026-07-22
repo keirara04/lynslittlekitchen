@@ -2,7 +2,7 @@ import { vueRouterDevtoolsNullGuard } from './build/vue-router-devtools-null-gua
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-22',
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/admin.css'],
 
   devtools: {
     enabled: true,
