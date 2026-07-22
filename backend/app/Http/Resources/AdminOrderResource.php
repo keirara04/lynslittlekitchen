@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 
-/** @mixin \App\Models\Order */
+/** @mixin Order */
 final class AdminOrderResource extends OrderResource
 {
     /**

@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\DeliveryZone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\DeliveryZone */
+/** @mixin DeliveryZone */
 class DeliveryZoneResource extends JsonResource
 {
     /**
