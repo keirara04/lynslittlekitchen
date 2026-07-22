@@ -8,6 +8,7 @@ import {
   humanizeStatus,
   progressIndex,
   stockSummary,
+  toProductPayload,
 } from '../app/utils/admin.mjs'
 
 test('formats admin currency in Malaysian Ringgit', () => {
@@ -41,4 +42,32 @@ test('humanizes API status labels', () => {
 test('uses the first product image with a stable placeholder fallback', () => {
   assert.equal(adminProductImage({ images: [{ url: 'https://images.example.test/cookie.jpg' }] }), 'https://images.example.test/cookie.jpg')
   assert.equal(adminProductImage({ images: [] }), '/images/products/cookie-placeholder.svg')
+})
+
+test('maps the product editor to the exact Laravel payload', () => {
+  const form = {
+    category_id: '2',
+    name: ' Choc Chip Crunch ',
+    description: ' Soft-centred cookie ',
+    ingredients: 'Flour, butter, chocolate',
+    allergens: ' ',
+    price: '25.00',
+    stock: '0',
+    status: 'active',
+    images: [{ url: ' https://images.example.test/choc-chip.jpg ' }, { url: '' }],
+    variants: [{ label: ' 300g (12 pcs) ', price: '25', stock: '12' }],
+  }
+
+  assert.deepEqual(toProductPayload(form), {
+    category_id: 2,
+    name: 'Choc Chip Crunch',
+    description: 'Soft-centred cookie',
+    ingredients: 'Flour, butter, chocolate',
+    allergens: null,
+    price: 25,
+    stock: 0,
+    status: 'active',
+    images: ['https://images.example.test/choc-chip.jpg'],
+    variants: [{ label: '300g (12 pcs)', price: 25, stock: 12 }],
+  })
 })

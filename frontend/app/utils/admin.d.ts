@@ -1,4 +1,4 @@
-import type { AdminProduct, OrderStatus } from '../types/admin'
+import type { AdminProduct, OrderStatus, ProductFormData, StoreProductPayload } from '../types/admin'
 
 export const fulfilmentStatuses: OrderStatus[]
 
@@ -9,3 +9,4 @@ export function progressIndex(status: string): number
 export function stockSummary(product: Pick<AdminProduct, 'stock' | 'variants'>): string
 export function buildAdminQuery(filters: Record<string, unknown>): Record<string, unknown>
 export function adminProductImage(product: Pick<AdminProduct, 'images'>): string
+export function toProductPayload(form: ProductFormData): StoreProductPayload

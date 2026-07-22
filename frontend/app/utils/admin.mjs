@@ -58,3 +58,27 @@ export function buildAdminQuery(filters) {
 export function adminProductImage(product) {
   return product?.images?.[0]?.url || '/images/products/cookie-placeholder.svg'
 }
+
+function nullableText(value) {
+  const text = String(value || '').trim()
+  return text || null
+}
+
+export function toProductPayload(form) {
+  return {
+    category_id: form.category_id === '' || form.category_id === null ? null : Number(form.category_id),
+    name: String(form.name || '').trim(),
+    description: nullableText(form.description),
+    ingredients: nullableText(form.ingredients),
+    allergens: nullableText(form.allergens),
+    price: Number(form.price || 0),
+    stock: Number(form.stock || 0),
+    status: form.status,
+    images: (form.images || []).map(image => String(image.url || '').trim()).filter(Boolean),
+    variants: (form.variants || []).map(variant => ({
+      label: String(variant.label || '').trim(),
+      price: Number(variant.price || 0),
+      stock: Number(variant.stock || 0),
+    })),
+  }
+}
