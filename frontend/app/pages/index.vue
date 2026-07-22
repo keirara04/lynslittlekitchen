@@ -19,7 +19,7 @@ const {
   <main class="min-h-screen bg-amber-50 px-6 py-16">
     <div class="mx-auto max-w-5xl">
       <p class="font-medium text-amber-700">
-        Freshly baked in Jasin, Melaka, Malaysia
+         Freshly baked in Jasin, Melaka, Malaysia
       </p>
 
       <h1 class="mt-3 text-5xl font-bold text-stone-900">
