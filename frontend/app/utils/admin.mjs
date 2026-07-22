@@ -82,3 +82,7 @@ export function toProductPayload(form) {
     })),
   }
 }
+
+export function orderActions(order) {
+  return Array.isArray(order?.allowed_next_statuses) ? [...order.allowed_next_statuses] : []
+}

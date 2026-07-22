@@ -6,6 +6,7 @@ import {
   buildAdminQuery,
   formatAdminCurrency,
   humanizeStatus,
+  orderActions,
   progressIndex,
   stockSummary,
   toProductPayload,
@@ -70,4 +71,10 @@ test('maps the product editor to the exact Laravel payload', () => {
     images: ['https://images.example.test/choc-chip.jpg'],
     variants: [{ label: '300g (12 pcs)', price: 25, stock: 12 }],
   })
+})
+
+test('uses backend-provided order actions and keeps payment out of fulfilment progress', () => {
+  assert.deepEqual(orderActions({ allowed_next_statuses: ['preparing', 'rejected'] }), ['preparing', 'rejected'])
+  assert.deepEqual(orderActions({ allowed_next_statuses: [] }), [])
+  assert.equal(progressIndex('paid'), -1)
 })
