@@ -8,7 +8,8 @@ export async function useAdminApi<T>(path: string, options: AdminApiOptions = {}
   const normalized = path.replace(/^\/+|\/+$/g, '')
 
   try {
-    return await $fetch<T>(`/api/admin-proxy/${normalized}`, options)
+    const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
+    return await $fetch<T>(`/api/admin-proxy/${normalized}`, { ...options, headers })
   }
   catch (error: any) {
     const status = Number(error?.statusCode ?? error?.response?.status)

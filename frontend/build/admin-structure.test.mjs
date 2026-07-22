@@ -69,3 +69,12 @@ test('shared admin dialogs and status states are accessible', async () => {
   const status = await source('components/admin/AdminStatusBadge.vue')
   assert.match(status, /humanizeStatus/)
 })
+
+test('dashboard renders real API metrics without invented trends', async () => {
+  const content = await source('pages/admin/index.vue')
+  for (const key of ['todays_sales', 'total_orders', 'monthly_revenue', 'best_selling_product', 'orders_by_status', 'low_stock_products', 'recent_orders']) {
+    assert.match(content, new RegExp(key))
+  }
+  assert.doesNotMatch(content, /yesterday|last month|trendPercentage|chartData/)
+  assert.match(content, /middleware:\s*'admin-auth'/)
+})
