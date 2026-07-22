@@ -19,12 +19,34 @@ class ProductSeeder extends Seeder
         $seasonal = Category::where('slug', 'seasonal-specials')->first();
         $gifts = Category::where('slug', 'gift-boxes')->first();
 
+        // Preserve existing product IDs (and any order-item relationships) when
+        // development catalogue names are replaced with the real products.
+        foreach ([
+            'original-chocolate-chip' => 'choc-chip-crunch',
+            'double-chocolate-fudge' => 'dubai-chewy-cookie',
+        ] as $legacySlug => $currentSlug) {
+            $legacyProduct = Product::withTrashed()->where('slug', $legacySlug)->first();
+
+            if (! $legacyProduct) {
+                continue;
+            }
+
+            if (Product::withTrashed()->where('slug', $currentSlug)->exists()) {
+                $legacyProduct->delete();
+
+                continue;
+            }
+
+            $legacyProduct->update(['slug' => $currentSlug]);
+            $legacyProduct->restore();
+        }
+
         // Products with pack-size variants have their base 'price'/'stock' set to the
         // smallest variant (used as the "from RM x" display price on listing cards).
         $products = [
             [
-                'category_id' => $classic?->id, 'name' => 'Original Chocolate Chip', 'price' => 18.00, 'stock' => 12,
-                'ingredients' => 'Flour, butter, brown sugar, chocolate chips, eggs, vanilla', 'allergens' => 'Contains gluten, eggs, milk',
+                'category_id' => $classic?->id, 'name' => 'Choc Chip Crunch', 'price' => 18.00, 'stock' => 12,
+                'ingredients' => 'Flour, butter, brown sugar, chocolate chunks, eggs, vanilla', 'allergens' => 'Contains gluten, eggs, milk',
                 'variants' => [
                     ['label' => '300g (12 pcs)', 'price' => 18.00, 'stock' => 20],
                     ['label' => '500g (20 pcs)', 'price' => 28.00, 'stock' => 15],
@@ -32,13 +54,8 @@ class ProductSeeder extends Seeder
                 ],
             ],
             [
-                'category_id' => $classic?->id, 'name' => 'Double Chocolate Fudge', 'price' => 20.00, 'stock' => 20,
-                'ingredients' => 'Flour, cocoa powder, butter, sugar, dark chocolate chunks', 'allergens' => 'Contains gluten, eggs, milk',
-                'variants' => [
-                    ['label' => '300g (12 pcs)', 'price' => 20.00, 'stock' => 18],
-                    ['label' => '500g (20 pcs)', 'price' => 31.00, 'stock' => 12],
-                    ['label' => '1kg (40 pcs)', 'price' => 55.00, 'stock' => 8],
-                ],
+                'category_id' => $stuffed?->id, 'name' => 'Dubai Chewy Cookie', 'price' => 24.00, 'stock' => 30,
+                'ingredients' => 'Flour, cocoa, butter, chocolate, pistachio cream, kataifi, eggs', 'allergens' => 'Contains gluten, eggs, milk, nuts',
             ],
             ['category_id' => $stuffed?->id, 'name' => 'Nutella Stuffed Cookie', 'price' => 24.00, 'stock' => 30, 'ingredients' => 'Flour, butter, sugar, hazelnut spread, eggs', 'allergens' => 'Contains gluten, eggs, milk, nuts'],
             ['category_id' => $stuffed?->id, 'name' => 'Biscoff Stuffed Cookie', 'price' => 24.00, 'stock' => 30, 'ingredients' => 'Flour, butter, sugar, Biscoff spread, eggs', 'allergens' => 'Contains gluten, eggs, milk, soy'],
@@ -58,6 +75,13 @@ class ProductSeeder extends Seeder
                     'status' => ProductStatus::Active,
                 ],
             );
+
+            $variantLabels = array_column($variants, 'label');
+            if ($variantLabels === []) {
+                $product->variants()->delete();
+            } else {
+                $product->variants()->whereNotIn('label', $variantLabels)->delete();
+            }
 
             foreach ($variants as $index => $variant) {
                 $product->variants()->updateOrCreate(

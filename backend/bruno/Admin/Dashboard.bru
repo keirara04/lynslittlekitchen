@@ -20,7 +20,12 @@ headers {
 
 docs {
   Requires `adminToken`. Returns today's sales, total orders, monthly revenue, best selling
-  product, and low-stock products (stock <= 10). Sales figures only count orders with
-  `payment_status = paid` — since Billplz isn't wired up yet, these will read 0 until you
-  manually set an order's `payment_status` to `paid` in the DB.
+  product, and low-stock alerts (stock <= 10). Sales figures AND best-selling product only
+  count orders with `payment_status = paid` — since Billplz isn't wired up yet, these will
+  read 0/null until you manually set an order's `payment_status` to `paid` in the DB.
+
+  `low_stock_products` entries look like `{ "product": "...", "variant_label": "..."|null,
+  "stock": n }` — for a product with pack-size variants, each low-stock variant is its own
+  entry (`variant_label` set); a product with no variants gets a single entry
+  (`variant_label: null`) based on its own `stock`.
 }

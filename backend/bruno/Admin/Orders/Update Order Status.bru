@@ -28,5 +28,11 @@ body:json {
 docs {
   Requires `adminToken`. Advances the order from "Create Order (Guest)" (`orderId`) to the
   next stage. Try running it again with "baking", "packing", "out_for_delivery",
-  "completed" to walk through the full status flow.
+  "completed" — one step at a time — to walk through the full status flow.
+
+  Transitions are validated server-side: you can only move to one of the statuses listed in
+  the order's own `allowed_next_statuses` field (every order response includes it). Skipping
+  ahead (e.g. "pending" straight to "completed") or changing a terminal status
+  ("completed"/"rejected"/"cancelled") returns **422** with a validation error explaining what
+  the valid next statuses actually are.
 }

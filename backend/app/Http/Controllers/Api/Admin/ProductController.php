@@ -8,10 +8,35 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $query = Product::query()->with(['category', 'images', 'variants']);
+
+        if ($search = $request->string('search')->trim()->value()) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower($search).'%']);
+        }
+
+        if ($category = $request->string('category')->trim()->value()) {
+            $query->whereHas('category', fn ($q) => $q->where('slug', $category));
+        }
+
+        if ($status = $request->string('status')->value()) {
+            $query->where('status', $status);
+        }
+
+        $query->latest();
+
+        return ProductResource::collection(
+            $query->paginate($request->integer('per_page', 20))
+        );
+    }
+
     public function store(StoreProductRequest $request): ProductResource
     {
         $data = $request->validated();

@@ -6,6 +6,7 @@ use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService
@@ -25,18 +26,23 @@ class DashboardService
                 ->whereMonth('created_at', now()->month)
                 ->sum('total'),
             'best_selling_product' => $this->bestSellingProduct(),
-            'low_stock_products' => $this->lowStockProducts(),
+            'low_stock_products' => $this->lowStockAlerts(),
         ];
     }
 
     /**
+     * Best seller is based on quantity sold across paid orders only — unpaid/cancelled
+     * orders haven't actually resulted in a sale yet.
+     *
      * @return array<string, mixed>|null
      */
     private function bestSellingProduct(): ?array
     {
         $row = OrderItem::query()
-            ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
-            ->groupBy('product_id')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.payment_status', PaymentStatus::Paid)
+            ->select('order_items.product_id', DB::raw('SUM(order_items.quantity) as total_sold'))
+            ->groupBy('order_items.product_id')
             ->orderByDesc('total_sold')
             ->first();
 
@@ -51,13 +57,34 @@ class DashboardService
     }
 
     /**
-     * @return array<int, array{id: int, name: string, stock: int}>
+     * Products with variants are alerted per-variant (each pack size has its own stock);
+     * products without variants fall back to their own base stock.
+     *
+     * @return array<int, array{product: string, variant_label: string|null, stock: int}>
      */
-    private function lowStockProducts(int $threshold = 10): array
+    private function lowStockAlerts(int $threshold = 10): array
     {
-        return Product::where('stock', '<=', $threshold)
-            ->orderBy('stock')
-            ->get(['id', 'name', 'stock'])
-            ->toArray();
+        $variantAlerts = ProductVariant::where('stock', '<=', $threshold)
+            ->with('product:id,name')
+            ->get()
+            ->map(fn (ProductVariant $variant) => [
+                'product' => $variant->product->name,
+                'variant_label' => $variant->label,
+                'stock' => $variant->stock,
+            ]);
+
+        $productAlerts = Product::doesntHave('variants')
+            ->where('stock', '<=', $threshold)
+            ->get(['name', 'stock'])
+            ->map(fn (Product $product) => [
+                'product' => $product->name,
+                'variant_label' => null,
+                'stock' => $product->stock,
+            ]);
+
+        return $variantAlerts->concat($productAlerts)
+            ->sortBy('stock')
+            ->values()
+            ->all();
     }
 }

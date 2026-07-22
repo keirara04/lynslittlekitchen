@@ -69,4 +69,41 @@ class ProductCrudTest extends TestCase
         $response->assertOk();
         $this->assertSoftDeleted($product);
     }
+
+    public function test_admin_product_list_includes_inactive_products(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Product::factory()->create(['name' => 'Active One', 'status' => 'active']);
+        Product::factory()->create(['name' => 'Hidden One', 'status' => 'inactive']);
+
+        $response = $this->actingAs($admin, 'sanctum')->getJson('/api/admin/products');
+
+        $response->assertOk();
+        $names = collect($response->json('data'))->pluck('name');
+        $this->assertTrue($names->contains('Active One'));
+        $this->assertTrue($names->contains('Hidden One'));
+    }
+
+    public function test_admin_product_list_can_be_filtered_by_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Product::factory()->create(['name' => 'Active One', 'status' => 'active']);
+        Product::factory()->create(['name' => 'Hidden One', 'status' => 'inactive']);
+
+        $response = $this->actingAs($admin, 'sanctum')->getJson('/api/admin/products?status=inactive');
+
+        $response->assertOk();
+        $names = collect($response->json('data'))->pluck('name');
+        $this->assertCount(1, $names);
+        $this->assertTrue($names->contains('Hidden One'));
+    }
+
+    public function test_a_customer_cannot_list_admin_products(): void
+    {
+        $customer = User::factory()->create();
+
+        $response = $this->actingAs($customer, 'sanctum')->getJson('/api/admin/products');
+
+        $response->assertForbidden();
+    }
 }

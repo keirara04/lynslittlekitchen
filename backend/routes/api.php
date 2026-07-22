@@ -36,6 +36,7 @@ Route::middleware('throttle:20,1')->post('/orders', [OrderController::class, 'st
 Route::get('/orders/{reference}', [OrderController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/products', [AdminProductController::class, 'index']);
     Route::post('/products', [AdminProductController::class, 'store']);
     Route::put('/products/{product}', [AdminProductController::class, 'update']);
     Route::delete('/products/{product}', [AdminProductController::class, 'destroy']);

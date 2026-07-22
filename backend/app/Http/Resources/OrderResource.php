@@ -20,6 +20,10 @@ class OrderResource extends JsonResource
             'delivery_fee' => (float) $this->delivery_fee,
             'payment_status' => $this->payment_status->value,
             'order_status' => $this->order_status->value,
+            'allowed_next_statuses' => array_map(
+                fn ($status) => $status->value,
+                $this->order_status->allowedNextStatuses()
+            ),
             'delivery_method' => $this->delivery_method->value,
             'delivery_address' => $this->delivery_address,
             'delivery_date' => $this->delivery_date?->toDateString(),

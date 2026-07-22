@@ -1,0 +1,26 @@
+meta {
+  name: List Products
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/admin/products
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Requires `adminToken`. Unlike the public "Catalogue/List Products" request, this includes
+  **inactive** products too and supports `search`, `category` (slug), `status`
+  (`active`/`inactive`), and `per_page` query params — e.g.
+  `{{baseUrl}}/admin/products?status=inactive`.
+}

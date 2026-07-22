@@ -26,7 +26,7 @@ docs {
   4. **Orders** → Create Order (Guest) — stores `orderReference` and `orderId`, then Track Order
   5. **Orders** → Create Order (With Variant) — orders a specific pack size instead of the base product
   6. **Orders** → Create Order (Out Of Stock) — expect 422
-  7. **Admin** → Products (Create → Update → Delete), Orders (List → Update Status), Dashboard
+  7. **Admin** → Products (List → Create → Update → Delete), Orders (List → Update Status), Dashboard
 
   Seeded admin credentials come from `backend/.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`), defaulted
   in the Local environment to match whatever's currently in `.env`.
@@ -36,4 +36,17 @@ docs {
   Products can optionally have `product_variants` (e.g. "300g" / "500g" / "1kg", each with its
   own price and stock). Orders reference `product_variant_id` on an item when a specific size
   was picked — see "Orders/Create Order (With Variant)" and "Admin/Products/Create Product".
+
+  ## Admin-only product list
+
+  `Admin/Products/List Products` differs from the public `Catalogue/List Products`: it includes
+  inactive products and supports a `status` filter — the public one only ever shows active
+  products.
+
+  ## Order status transitions
+
+  Order status can only move to one of a fixed set of "next" statuses (see the `OrderStatus`
+  enum's transition map) — enforced server-side, not just in whatever UI you build against
+  this API. `Admin/Orders/Update Order Status` explains the flow and what a rejected jump
+  looks like.
 }
