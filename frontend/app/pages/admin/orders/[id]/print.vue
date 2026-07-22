@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminInvoice from '~/components/admin/orders/AdminInvoice.vue'
 import type { AdminOrder } from '~/types/admin'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })

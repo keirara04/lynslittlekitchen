@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\UpdateOrderStatusRequest;
 use App\Http\Resources\AdminOrderResource;
 use App\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -45,6 +47,22 @@ class OrderController extends Controller
     public function updateStatus(UpdateOrderStatusRequest $request, Order $order): AdminOrderResource
     {
         $order->update(['order_status' => $request->validated('order_status')]);
+
+        return new AdminOrderResource(
+            $order->load(['user', 'items.product', 'items.productVariant', 'deliveryZone'])
+        );
+    }
+
+    public function verifyPayment(Order $order): AdminOrderResource|JsonResponse
+    {
+        if ($order->payment_status === PaymentStatus::Paid) {
+            return response()->json(['message' => 'This order is already marked as paid.'], 422);
+        }
+
+        $order->update([
+            'payment_status' => PaymentStatus::Paid,
+            'paid_at' => now(),
+        ]);
 
         return new AdminOrderResource(
             $order->load(['user', 'items.product', 'items.productVariant', 'deliveryZone'])

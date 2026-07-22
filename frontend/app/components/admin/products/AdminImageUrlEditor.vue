@@ -4,8 +4,30 @@ import type { ProductFormData } from '~/types/admin'
 const model = defineModel<ProductFormData['images']>({ required: true })
 const failed = ref<Record<number, boolean>>({})
 
+const { upload, uploading, error } = useCloudinaryUpload()
+const fileInput = ref<HTMLInputElement>()
+
 function addImage() {
   model.value.push({ url: '' })
+}
+
+function triggerUpload() {
+  fileInput.value?.click()
+}
+
+async function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+
+  try {
+    const url = await upload(file)
+    model.value.push({ url })
+  }
+  catch {
+    // error is already captured in the `error` ref for display below.
+  }
 }
 
 function move(index: number, direction: -1 | 1) {
@@ -19,7 +41,17 @@ function move(index: number, direction: -1 | 1) {
 
 <template>
   <section class="admin-editor-section">
-    <header><div><h2>Product images</h2><p>Add HTTPS image URLs in display order. File upload is not connected yet.</p></div><button class="admin-button admin-button--secondary" type="button" @click="addImage">＋ Add image URL</button></header>
+    <header>
+      <div><h2>Product images</h2><p>Upload a photo or paste an HTTPS image URL directly.</p></div>
+      <div style="display: flex; gap: .5rem;">
+        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileSelected">
+        <button class="admin-button admin-button--secondary" type="button" :disabled="uploading" @click="triggerUpload">
+          {{ uploading ? 'Uploading…' : '⬆ Upload image' }}
+        </button>
+        <button class="admin-button admin-button--secondary" type="button" @click="addImage">＋ Add image URL</button>
+      </div>
+    </header>
+    <p v-if="error" class="admin-field__error">{{ error }}</p>
     <div v-if="model.length" class="admin-repeater">
       <article v-for="(image, index) in model" :key="index" class="admin-repeater__row admin-repeater__row--image">
         <div class="admin-image-preview">

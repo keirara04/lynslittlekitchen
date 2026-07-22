@@ -48,7 +48,7 @@ function onKeydown(event: KeyboardEvent) {
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="admin-dialog-backdrop" @mousedown.self="!busy && emit('close')">
+    <div v-if="open" class="admin-surface admin-dialog-backdrop" @mousedown.self="!busy && emit('close')">
       <section ref="panel" class="admin-dialog" role="dialog" aria-modal="true" :aria-labelledby="`${$attrs.id || 'admin-confirm'}-title`" @keydown="onKeydown">
         <p class="admin-kicker">Please confirm</p>
         <h2 :id="`${$attrs.id || 'admin-confirm'}-title`">{{ title }}</h2>

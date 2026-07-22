@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AdminOrderFilters from '~/components/admin/orders/AdminOrderFilters.vue'
+import AdminOrderTable from '~/components/admin/orders/AdminOrderTable.vue'
 import { buildAdminQuery } from '~/utils/admin.mjs'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })

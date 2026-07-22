@@ -30,6 +30,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Manual Bank Transfer Details
+    |--------------------------------------------------------------------------
+    |
+    | Shown to customers at checkout while no payment gateway is connected.
+    | Customers transfer manually and upload a receipt; an admin verifies it.
+    |
+    */
+
+    'bank_name' => env('BUSINESS_BANK_NAME'),
+    'bank_account_name' => env('BUSINESS_BANK_ACCOUNT_NAME'),
+    'bank_account_number' => env('BUSINESS_BANK_ACCOUNT_NUMBER'),
+    'duitnow_id' => env('BUSINESS_DUITNOW_ID'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

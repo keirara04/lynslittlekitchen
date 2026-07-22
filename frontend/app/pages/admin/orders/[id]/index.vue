@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import AdminOrderItems from '~/components/admin/orders/AdminOrderItems.vue'
+import AdminOrderStatusForm from '~/components/admin/orders/AdminOrderStatusForm.vue'
+import AdminOrderTimeline from '~/components/admin/orders/AdminOrderTimeline.vue'
 import { formatAdminDate, humanizeStatus } from '~/utils/admin.mjs'
 import type { AdminOrder, OrderStatus } from '~/types/admin'
 

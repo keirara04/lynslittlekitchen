@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AdminProductFilters from '~/components/admin/products/AdminProductFilters.vue'
+import AdminProductTable from '~/components/admin/products/AdminProductTable.vue'
 import { buildAdminQuery } from '~/utils/admin.mjs'
 import type { AdminProduct, CategoriesResponse } from '~/types/admin'
 

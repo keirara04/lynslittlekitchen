@@ -52,20 +52,25 @@ useSeoMeta({ title: "Admin sign in | Lyn's Little Kitchen", robots: 'noindex, no
       <form class="admin-login-form" @submit.prevent="submit">
         <label class="admin-field">
           <span>Email address</span>
-          <input v-model.trim="email" type="email" autocomplete="email" required placeholder="admin@lynslittlekitchen.com">
+          <input v-model.trim="email" type="email" autocomplete="email" required placeholder="Enter your admin email">
           <small v-if="fieldErrors.email" class="admin-field__error">{{ fieldErrors.email[0] }}</small>
         </label>
 
-        <label class="admin-field">
-          <span>Password</span>
+        <div class="admin-field">
+          <label for="admin-password">Password</label>
           <span class="admin-password-field">
-            <input v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" required placeholder="Enter your password">
-            <button type="button" :aria-label="showPassword ? 'Hide password' : 'Show password'" @click="showPassword = !showPassword">
+            <input id="admin-password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" required placeholder="Enter your password">
+            <button
+              type="button"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              :aria-pressed="showPassword"
+              @click.stop="showPassword = !showPassword"
+            >
               {{ showPassword ? 'Hide' : 'Show' }}
             </button>
           </span>
           <small v-if="fieldErrors.password" class="admin-field__error">{{ fieldErrors.password[0] }}</small>
-        </label>
+        </div>
 
         <label class="admin-check">
           <input v-model="remember" type="checkbox">

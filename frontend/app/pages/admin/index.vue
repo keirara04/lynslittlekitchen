@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import AdminLowStock from '~/components/admin/dashboard/AdminLowStock.vue'
+import AdminMetricCard from '~/components/admin/dashboard/AdminMetricCard.vue'
+import AdminOrderOverview from '~/components/admin/dashboard/AdminOrderOverview.vue'
+import AdminRecentOrders from '~/components/admin/dashboard/AdminRecentOrders.vue'
 import { formatAdminCurrency } from '~/utils/admin.mjs'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })

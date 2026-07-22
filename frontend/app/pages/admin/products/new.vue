@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminProductForm from '~/components/admin/products/AdminProductForm.vue'
 import type { CategoriesResponse, StoreProductPayload } from '~/types/admin'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })

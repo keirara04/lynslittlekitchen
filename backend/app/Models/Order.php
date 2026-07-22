@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'user_id', 'delivery_zone_id', 'guest_name', 'guest_phone', 'guest_email',
     'order_reference', 'total', 'delivery_fee', 'payment_status', 'order_status',
     'delivery_method', 'delivery_address', 'delivery_date', 'notes',
+    'payment_proof_url', 'payment_proof_submitted_at', 'paid_at',
 ])]
 class Order extends Model
 {
@@ -34,6 +35,8 @@ class Order extends Model
             'order_status' => OrderStatus::class,
             'delivery_method' => DeliveryMethod::class,
             'delivery_date' => 'date',
+            'payment_proof_submitted_at' => 'datetime',
+            'paid_at' => 'datetime',
         ];
     }
 

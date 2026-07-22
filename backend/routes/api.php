@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,9 @@ Route::get('/products/{slug}', [ProductController::class, 'show']);
 
 Route::middleware('throttle:20,1')->post('/orders', [OrderController::class, 'store']);
 Route::get('/orders/{reference}', [OrderController::class, 'show']);
+Route::middleware('throttle:20,1')->post('/orders/{reference}/payment-proof', [OrderController::class, 'submitProof']);
+
+Route::get('/payment-info', [PaymentController::class, 'info']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/products', [AdminProductController::class, 'index']);
@@ -45,6 +49,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{order}/verify-payment', [AdminOrderController::class, 'verifyPayment']);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
 });

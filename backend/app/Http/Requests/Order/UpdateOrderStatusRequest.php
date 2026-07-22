@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Order;
 
+use App\Enums\DeliveryMethod;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -46,6 +48,19 @@ class UpdateOrderStatusRequest extends FormRequest
                     $allowed === []
                         ? "Order is already in a terminal status ({$order->order_status->value}) and cannot be changed."
                         : "Cannot move from \"{$order->order_status->value}\" to \"{$next->value}\". Allowed next: ".implode(', ', $allowed).'.',
+                );
+
+                return;
+            }
+
+            $requiresPayment = $next === OrderStatus::Preparing
+                && $order->delivery_method !== DeliveryMethod::Pickup
+                && $order->payment_status !== PaymentStatus::Paid;
+
+            if ($requiresPayment) {
+                $validator->errors()->add(
+                    'order_status',
+                    'Payment must be verified before this order can move to preparing. Verify the payment receipt first (pickup orders are exempt).',
                 );
             }
         });

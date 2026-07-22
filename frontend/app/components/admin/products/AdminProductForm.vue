@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AdminImageUrlEditor from './AdminImageUrlEditor.vue'
+import AdminVariantEditor from './AdminVariantEditor.vue'
 import { toProductPayload } from '~/utils/admin.mjs'
 import type { AdminProduct, ProductFormData, StoreProductPayload } from '~/types/admin'
 import type { Category } from '~/types/catalog'

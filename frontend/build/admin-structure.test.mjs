@@ -28,6 +28,64 @@ test('login uses the dedicated auth layout', async () => {
   assert.match(content, /auth\.login/)
 })
 
+test('login does not advertise a hard-coded admin account', async () => {
+  const content = await source('pages/admin/login.vue')
+  assert.doesNotMatch(content, /placeholder="[^"\s]+@[^"\s]+"/)
+  assert.match(content, /placeholder="Enter your admin email"/)
+})
+
+test('password visibility control is separate from its label', async () => {
+  const content = await source('pages/admin/login.vue')
+  assert.match(content, /<label for="admin-password">Password<\/label>/)
+  assert.match(content, /<input[^>]+id="admin-password"/)
+  assert.match(content, /@click\.stop="showPassword = !showPassword"/)
+  const labels = [...content.matchAll(/<label\b[^>]*>[\s\S]*?<\/label>/g)].map(match => match[0])
+  assert.equal(labels.some(label => label.includes('admin-password-field')), false)
+})
+
+test('product editor explicitly imports nested admin components', async () => {
+  const createPage = await source('pages/admin/products/new.vue')
+  const editPage = await source('pages/admin/products/[id]/edit.vue')
+  const form = await source('components/admin/products/AdminProductForm.vue')
+
+  assert.match(createPage, /import AdminProductForm from ['"]~\/components\/admin\/products\/AdminProductForm\.vue['"]/)
+  assert.match(editPage, /import AdminProductForm from ['"]~\/components\/admin\/products\/AdminProductForm\.vue['"]/)
+  assert.match(form, /import AdminVariantEditor from ['"]\.\/AdminVariantEditor\.vue['"]/)
+  assert.match(form, /import AdminImageUrlEditor from ['"]\.\/AdminImageUrlEditor\.vue['"]/)
+})
+
+test('all nested admin page components are explicitly imported', async () => {
+  const pages = {
+    'pages/admin/index.vue': {
+      directory: 'dashboard',
+      components: ['AdminMetricCard', 'AdminOrderOverview', 'AdminLowStock', 'AdminRecentOrders'],
+    },
+    'pages/admin/products/index.vue': {
+      directory: 'products',
+      components: ['AdminProductFilters', 'AdminProductTable'],
+    },
+    'pages/admin/orders/index.vue': {
+      directory: 'orders',
+      components: ['AdminOrderFilters', 'AdminOrderTable'],
+    },
+    'pages/admin/orders/[id]/index.vue': {
+      directory: 'orders',
+      components: ['AdminOrderTimeline', 'AdminOrderItems', 'AdminOrderStatusForm'],
+    },
+    'pages/admin/orders/[id]/print.vue': {
+      directory: 'orders',
+      components: ['AdminInvoice'],
+    },
+  }
+
+  for (const [page, expected] of Object.entries(pages)) {
+    const content = await source(page)
+    for (const component of expected.components) {
+      assert.match(content, new RegExp(`import ${component} from ['"]~/components/admin/${expected.directory}/${component}\\.vue['"]`))
+    }
+  }
+})
+
 test('admin layout contains responsive navigation landmarks', async () => {
   const content = await source('layouts/admin.vue')
   assert.match(content, /AdminSidebar/)
@@ -68,6 +126,12 @@ test('shared admin dialogs and status states are accessible', async () => {
 
   const status = await source('components/admin/AdminStatusBadge.vue')
   assert.match(status, /humanizeStatus/)
+})
+
+test('teleported admin dialog retains the admin design tokens', async () => {
+  const dialog = await source('components/admin/AdminConfirmDialog.vue')
+
+  assert.match(dialog, /class="admin-surface admin-dialog-backdrop"/)
 })
 
 test('dashboard renders real API metrics without invented trends', async () => {
