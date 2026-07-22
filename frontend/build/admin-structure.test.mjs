@@ -78,3 +78,16 @@ test('dashboard renders real API metrics without invented trends', async () => {
   assert.doesNotMatch(content, /yesterday|last month|trendPercentage|chartData/)
   assert.match(content, /middleware:\s*'admin-auth'/)
 })
+
+test('print route renders a complete semantic invoice', async () => {
+  const page = await source('pages/admin/orders/[id]/print.vue')
+  const invoice = await source('components/admin/orders/AdminInvoice.vue')
+  assert.match(page, /window\.print\(\)/)
+  assert.match(page, /AdminInvoice/)
+  for (const text of ['Lyn’s Little Kitchen', 'order_reference', 'Customer', 'Subtotal', 'Delivery fee', 'Total']) {
+    assert.match(invoice, new RegExp(text))
+  }
+  assert.match(invoice, /<table/)
+  assert.match(invoice, /<tfoot/)
+  assert.match(invoice, /<address/)
+})
