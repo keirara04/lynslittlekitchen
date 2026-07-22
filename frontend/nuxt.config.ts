@@ -1,11 +1,23 @@
 import { vueRouterDevtoolsNullGuard } from './build/vue-router-devtools-null-guard.mjs'
-
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  compatibilityDate: '2026-07-22',
+
+  devtools: {
+    enabled: true,
+  },
+
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@pinia/nuxt',
+  ],
+
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
+    },
+  },
+
   vite: {
-    plugins: [vueRouterDevtoolsNullGuard()]
-  }
+    plugins: [vueRouterDevtoolsNullGuard()],
+  },
 })

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { vueRouterDevtoolsNullGuard } from './vue-router-devtools-null-guard.mjs'
 
@@ -36,4 +37,17 @@ test('fails when the targeted Vue Router source no longer matches', () => {
       ),
     /unsafe devtools assignment was not found/,
   )
+})
+
+test('registers the guard in the Nuxt Vite configuration', async () => {
+  const config = await readFile(
+    new URL('../nuxt.config.ts', import.meta.url),
+    'utf8',
+  )
+
+  assert.match(
+    config,
+    /import \{ vueRouterDevtoolsNullGuard \} from '.\/build\/vue-router-devtools-null-guard\.mjs'/,
+  )
+  assert.match(config, /plugins:\s*\[vueRouterDevtoolsNullGuard\(\)\]/)
 })
