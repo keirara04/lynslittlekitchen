@@ -37,6 +37,11 @@ class ProductController extends Controller
         );
     }
 
+    public function show(Product $product): ProductResource
+    {
+        return new ProductResource($product->load(['category', 'images', 'variants']));
+    }
+
     public function store(StoreProductRequest $request): ProductResource
     {
         $data = $request->validated();

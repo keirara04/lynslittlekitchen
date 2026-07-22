@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\PaymentStatus;
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -27,7 +28,48 @@ class DashboardService
                 ->sum('total'),
             'best_selling_product' => $this->bestSellingProduct(),
             'low_stock_products' => $this->lowStockAlerts(),
+            'orders_by_status' => $this->ordersByStatus(),
+            'recent_orders' => $this->recentOrders(),
         ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function ordersByStatus(): array
+    {
+        $counts = Order::query()
+            ->select('order_status', DB::raw('COUNT(*) as aggregate'))
+            ->groupBy('order_status')
+            ->pluck('aggregate', 'order_status');
+
+        return collect(OrderStatus::cases())
+            ->mapWithKeys(fn (OrderStatus $status) => [
+                $status->value => (int) ($counts[$status->value] ?? 0),
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function recentOrders(): array
+    {
+        return Order::query()
+            ->with('user:id,name')
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn (Order $order) => [
+                'id' => $order->id,
+                'order_reference' => $order->order_reference,
+                'customer_name' => $order->user?->name ?? $order->guest_name ?? 'Guest',
+                'total' => (float) $order->total,
+                'payment_status' => $order->payment_status->value,
+                'order_status' => $order->order_status->value,
+                'created_at' => $order->created_at?->toIso8601String(),
+            ])
+            ->all();
     }
 
     /**

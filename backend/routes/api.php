@@ -37,11 +37,13 @@ Route::get('/orders/{reference}', [OrderController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/products', [AdminProductController::class, 'index']);
+    Route::get('/products/{product}', [AdminProductController::class, 'show']);
     Route::post('/products', [AdminProductController::class, 'store']);
     Route::put('/products/{product}', [AdminProductController::class, 'update']);
     Route::delete('/products/{product}', [AdminProductController::class, 'destroy']);
 
     Route::get('/orders', [AdminOrderController::class, 'index']);
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);

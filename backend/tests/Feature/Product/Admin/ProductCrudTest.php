@@ -106,4 +106,26 @@ class ProductCrudTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_an_admin_can_view_an_inactive_product_for_editing(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $product = Product::factory()->create(['status' => 'inactive']);
+
+        $this->actingAs($admin, 'sanctum')
+            ->getJson("/api/admin/products/{$product->id}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $product->id)
+            ->assertJsonPath('data.status', 'inactive');
+    }
+
+    public function test_a_customer_cannot_view_an_admin_product(): void
+    {
+        $customer = User::factory()->create();
+        $product = Product::factory()->create();
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson("/api/admin/products/{$product->id}")
+            ->assertForbidden();
+    }
 }

@@ -54,4 +54,39 @@ class DashboardTest extends TestCase
         $this->assertTrue($alerts->contains(fn ($a) => $a['product'] === 'Plain Cookie' && $a['variant_label'] === null && $a['stock'] === 2));
         $this->assertFalse($alerts->contains(fn ($a) => $a['product'] === 'Chocolate Chip' && $a['variant_label'] === null));
     }
+
+    public function test_dashboard_includes_order_status_counts_and_recent_orders(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pending = Order::factory()->create([
+            'guest_name' => 'Pending Customer',
+            'order_status' => 'pending',
+        ]);
+        Order::factory()->create([
+            'guest_name' => 'Completed Customer',
+            'order_status' => 'completed',
+        ]);
+
+        $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/admin/dashboard')
+            ->assertOk()
+            ->assertJsonPath('orders_by_status.pending', 1)
+            ->assertJsonPath('orders_by_status.completed', 1)
+            ->assertJsonCount(2, 'recent_orders')
+            ->assertJsonFragment([
+                'id' => $pending->id,
+                'customer_name' => 'Pending Customer',
+            ])
+            ->assertJsonStructure([
+                'recent_orders' => [[
+                    'id',
+                    'order_reference',
+                    'customer_name',
+                    'total',
+                    'payment_status',
+                    'order_status',
+                    'created_at',
+                ]],
+            ]);
+    }
 }
