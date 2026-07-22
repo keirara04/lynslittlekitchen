@@ -1,0 +1,24 @@
+meta {
+  name: Delete Product
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/admin/products/{{productId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Soft-deletes the product from "Create Product" (`productId`). It disappears from the
+  public catalogue immediately but the row stays in the DB (`deleted_at` is set).
+}

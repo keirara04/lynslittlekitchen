@@ -1,0 +1,20 @@
+meta {
+  name: Get Product By Slug
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/products/{{productSlug}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public. Fetches a single active product by slug (defaults to `original-chocolate-chip`,
+  seeded by ProductSeeder). Returns 404 if the slug doesn't exist or the product is inactive.
+}

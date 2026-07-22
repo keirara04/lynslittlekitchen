@@ -1,0 +1,26 @@
+meta {
+  name: Dashboard
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/admin/dashboard
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Requires `adminToken`. Returns today's sales, total orders, monthly revenue, best selling
+  product, and low-stock products (stock <= 10). Sales figures only count orders with
+  `payment_status = paid` — since Billplz isn't wired up yet, these will read 0 until you
+  manually set an order's `payment_status` to `paid` in the DB.
+}

@@ -1,0 +1,24 @@
+meta {
+  name: List Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/admin/orders
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Requires `adminToken`. Paginated list of all orders (newest first), with items/product/
+  delivery zone eager-loaded. See "Filter Orders By Status" for the `order_status` query param.
+}

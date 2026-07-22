@@ -1,0 +1,24 @@
+meta {
+  name: Logout
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{customerToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Revokes the current access token (`customerToken`). Run Login (Customer) again afterwards
+  to get a fresh token if you want to keep testing.
+}

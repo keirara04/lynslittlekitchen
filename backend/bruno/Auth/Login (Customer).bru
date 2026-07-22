@@ -1,0 +1,34 @@
+meta {
+  name: Login (Customer)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{customerEmail}}",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  if (res.body.token) {
+    bru.setEnvVar("customerToken", res.body.token);
+  }
+}
+
+docs {
+  Re-logs in as the customer created by Register.bru (uses `customerEmail` saved from that
+  response) and refreshes `customerToken`. Run Register.bru first at least once.
+}

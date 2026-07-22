@@ -1,0 +1,53 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Bruno Test Cookie",
+    "description": "Created from the Bruno test collection.",
+    "price": 12.50,
+    "stock": 25,
+    "status": "active",
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+    ],
+    "variants": [
+      { "label": "300g (12 pcs)", "price": 12.50, "stock": 25 },
+      { "label": "500g (20 pcs)", "price": 19.00, "stock": 15 }
+    ]
+  }
+}
+
+script:post-response {
+  if (res.body.data) {
+    bru.setEnvVar("productId", res.body.data.id);
+  }
+}
+
+docs {
+  Requires `adminToken` (run Auth/Login (Admin) first). Without a valid admin bearer token
+  this returns 401 (no token) or 403 (non-admin token). Stores the new product's id in
+  `productId` for the Update/Delete requests below.
+
+  `variants` is optional — omit it entirely for a product with no pack-size options (it'll
+  just use the top-level `price`/`stock`). When provided, each variant needs its own
+  `label`/`price`/`stock`; the response's `data.variants[]` will list them.
+}

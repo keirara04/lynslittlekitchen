@@ -1,0 +1,21 @@
+meta {
+  name: List Products
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/products
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public. Paginated list of active products (default 12 per page). See the sibling
+  "Search Products" and "Filter Products By Category" requests for the `search`, `category`,
+  `sort` (`price_asc` | `price_desc` | `name`) and `per_page` query params.
+}

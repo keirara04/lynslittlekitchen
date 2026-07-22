@@ -24,7 +24,7 @@ logs
 !.env.example
 
 #docs
-/docs
+docs
 
 # macOS
 .DS_Store

@@ -1,0 +1,25 @@
+meta {
+  name: Search Products
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/products?search=chocolate&sort=price_asc
+  body: none
+  auth: none
+}
+
+params:query {
+  search: chocolate
+  sort: price_asc
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public. Case-insensitive name search, sorted by price ascending. Try `sort=price_desc` or
+  `sort=name` too.
+}

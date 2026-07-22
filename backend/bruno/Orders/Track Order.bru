@@ -1,0 +1,24 @@
+meta {
+  name: Track Order
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/orders/{{orderReference}}?phone={{orderPhone}}
+  body: none
+  auth: none
+}
+
+params:query {
+  phone: {{orderPhone}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public guest order lookup by reference + phone number (no login required). Uses
+  `orderReference` saved by "Create Order (Guest)". Returns 404 if the phone doesn't match.
+}

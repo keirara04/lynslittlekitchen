@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin \App\Models\ProductVariant */
+class ProductVariantResource extends JsonResource
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'label' => $this->label,
+            'price' => (float) $this->price,
+            'stock' => $this->stock,
+            'in_stock' => $this->stock > 0,
+        ];
+    }
+}

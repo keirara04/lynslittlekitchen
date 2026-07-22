@@ -1,0 +1,52 @@
+meta {
+  name: Create Order (Guest)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/orders
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "items": [
+      { "product_id": 1, "quantity": 2 }
+    ],
+    "guest_name": "Jane Doe",
+    "guest_phone": "{{orderPhone}}",
+    "guest_email": "jane@example.com",
+    "delivery_method": "delivery",
+    "delivery_zone_id": {{deliveryZoneId}},
+    "delivery_address": "No. 12, Jalan Anggerik, Jasin, Melaka",
+    "delivery_date": "2026-08-01",
+    "notes": "Please pack as a gift, thank you!"
+  }
+}
+
+script:post-response {
+  if (res.body.data) {
+    bru.setEnvVar("orderReference", res.body.data.order_reference);
+    bru.setEnvVar("orderId", res.body.data.id);
+  }
+}
+
+docs {
+  Public guest checkout. Locks stock for product_id 1 (seeded "Original Chocolate Chip"),
+  decrements it, and creates the order as `unpaid` / `pending`. Stores `orderReference` and
+  `orderId` for the Track Order and Admin/Orders requests.
+
+  `delivery_address` is required whenever `delivery_method` is `"delivery"` (validation error
+  otherwise) — not required for `"pickup"`. See "Create Order (With Variant)" for ordering a
+  specific pack size instead of the base product.
+
+  Re-run a few times to watch `stock` on product 1 go down via the "Get Product By Slug"
+  request in Catalogue/.
+}

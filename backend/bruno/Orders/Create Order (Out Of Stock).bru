@@ -1,0 +1,33 @@
+meta {
+  name: Create Order (Out Of Stock)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/orders
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "items": [
+      { "product_id": 1, "quantity": 999999 }
+    ],
+    "guest_name": "Jane Doe",
+    "guest_phone": "{{orderPhone}}",
+    "delivery_method": "pickup",
+    "delivery_date": "2026-08-01"
+  }
+}
+
+docs {
+  Negative-path test: requests far more stock than exists for product_id 1.
+  Expect **422** with a "Insufficient stock" message, and no row inserted into `orders`.
+}

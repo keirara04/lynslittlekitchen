@@ -1,0 +1,39 @@
+headers {
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  # Cookie Business API
+
+  Manual test collection for the Lyn's Little Kitchen Laravel backend (Phase 2: auth, categories, products, orders, admin).
+
+  ## Setup
+
+  1. Start Postgres and the API: `php artisan serve` (default `http://127.0.0.1:8000`).
+  2. Make sure the DB is migrated and seeded: `php artisan migrate:fresh --seed`.
+  3. In Bruno, select the **Local** environment (top right).
+  4. Run requests roughly top-to-bottom within each folder — several requests save values
+     (tokens, IDs, order references) into environment variables that later requests reuse.
+
+  ## Suggested run order
+
+  1. **Auth** → Login (Admin) — stores `adminToken`
+  2. **Auth** → Register → Login (Customer) — stores `customerToken`
+  3. **Catalogue** → List/Search/Filter/Get Product
+  4. **Orders** → Create Order (Guest) — stores `orderReference` and `orderId`, then Track Order
+  5. **Orders** → Create Order (With Variant) — orders a specific pack size instead of the base product
+  6. **Orders** → Create Order (Out Of Stock) — expect 422
+  7. **Admin** → Products (Create → Update → Delete), Orders (List → Update Status), Dashboard
+
+  Seeded admin credentials come from `backend/.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`), defaulted
+  in the Local environment to match whatever's currently in `.env`.
+
+  ## Product variants (pack sizes)
+
+  Products can optionally have `product_variants` (e.g. "300g" / "500g" / "1kg", each with its
+  own price and stock). Orders reference `product_variant_id` on an item when a specific size
+  was picked — see "Orders/Create Order (With Variant)" and "Admin/Products/Create Product".
+}

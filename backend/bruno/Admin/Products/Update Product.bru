@@ -1,0 +1,36 @@
+meta {
+  name: Update Product
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/admin/products/{{productId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "price": 14.00,
+    "stock": 40
+  }
+}
+
+docs {
+  Partial update of the product created by "Create Product" (`productId`). Only fields
+  present in the body are changed — `name`/`description`/etc are left untouched.
+
+  `variants` (if included) fully replaces the existing set — it deletes all current variants
+  for this product and recreates them from the array you send. Omit the key entirely to leave
+  existing variants untouched.
+}

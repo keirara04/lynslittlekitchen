@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Seeded Admin Account
+    |--------------------------------------------------------------------------
+    |
+    | Used by AdminUserSeeder to create/update the first admin account.
+    |
+    */
+
+    'admin_name' => env('ADMIN_NAME', 'Admin'),
+    'admin_email' => env('ADMIN_EMAIL', 'admin@example.com'),
+    'admin_password' => env('ADMIN_PASSWORD', 'password'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

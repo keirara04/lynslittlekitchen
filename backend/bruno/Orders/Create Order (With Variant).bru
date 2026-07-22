@@ -1,0 +1,40 @@
+meta {
+  name: Create Order (With Variant)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/orders
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "items": [
+      { "product_id": 1, "product_variant_id": {{productVariantId}}, "quantity": 1 }
+    ],
+    "guest_name": "Jane Doe",
+    "guest_phone": "{{orderPhone}}",
+    "delivery_method": "pickup",
+    "delivery_date": "2026-08-01"
+  }
+}
+
+docs {
+  Orders a specific pack size instead of the base product. `productVariantId` defaults to 1
+  (the "300g (12 pcs)" variant of product 1, "Original Chocolate Chip", from a fresh seed) —
+  run "Catalogue/Get Product By Slug" first and check the `variants[]` array if your variant
+  ids differ (e.g. after re-seeding out of order).
+
+  Price and stock come from the variant, not the product: the response's
+  `items[0].variant_label` should read "300g (12 pcs)" and `items[0].price` should be 18.
+  Requesting a `product_variant_id` that belongs to a different product than `product_id`
+  returns 422 — see "Create Order (Out Of Stock)" for the other negative-path example.
+}

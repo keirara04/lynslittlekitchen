@@ -1,0 +1,28 @@
+meta {
+  name: Filter Orders By Status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/admin/orders?order_status=pending
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+params:query {
+  order_status: pending
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Requires `adminToken`. Valid values: pending, preparing, baking, packing,
+  out_for_delivery, completed, rejected, cancelled.
+}

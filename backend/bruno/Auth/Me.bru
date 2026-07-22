@@ -1,0 +1,24 @@
+meta {
+  name: Me
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{customerToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Returns the authenticated user. Uses `customerToken` — swap the token var to `adminToken`
+  to check the admin account instead.
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Update Order Status
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "order_status": "preparing"
+  }
+}
+
+docs {
+  Requires `adminToken`. Advances the order from "Create Order (Guest)" (`orderId`) to the
+  next stage. Try running it again with "baking", "packing", "out_for_delivery",
+  "completed" to walk through the full status flow.
+}

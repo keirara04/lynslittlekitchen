@@ -1,0 +1,24 @@
+meta {
+  name: Filter Products By Category
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/products?category={{categorySlug}}
+  body: none
+  auth: none
+}
+
+params:query {
+  category: {{categorySlug}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public. Filters products belonging to the category with slug `categorySlug`
+  (defaults to `classic-cookies`, seeded by CategorySeeder).
+}
