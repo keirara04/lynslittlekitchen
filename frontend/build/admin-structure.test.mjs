@@ -42,3 +42,30 @@ test('admin visual tokens and both layouts exist', async () => {
   assert.match(css, /@media \(max-width:\s*767px\)/)
   assert.match(css, /prefers-reduced-motion/)
 })
+
+test('future admin modules render intentional placeholders without API calls', async () => {
+  const routes = {
+    'customers.vue': 'Customers',
+    'delivery-zones.vue': 'Delivery Zones',
+    'promotions.vue': 'Promotions',
+    'reports.vue': 'Reports',
+    'settings.vue': 'Settings',
+  }
+
+  for (const [file, title] of Object.entries(routes)) {
+    const content = await source(`pages/admin/${file}`)
+    assert.match(content, /AdminPlaceholder/)
+    assert.match(content, new RegExp(`title="${title}"`))
+    assert.doesNotMatch(content, /useAdminApi|\$fetch|useFetch|useAsyncData/)
+  }
+})
+
+test('shared admin dialogs and status states are accessible', async () => {
+  const dialog = await source('components/admin/AdminConfirmDialog.vue')
+  assert.match(dialog, /role="dialog"/)
+  assert.match(dialog, /aria-modal="true"/)
+  assert.match(dialog, /Escape/)
+
+  const status = await source('components/admin/AdminStatusBadge.vue')
+  assert.match(status, /humanizeStatus/)
+})
