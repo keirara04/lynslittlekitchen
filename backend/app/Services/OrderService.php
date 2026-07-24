@@ -110,6 +110,33 @@ class OrderService
         });
     }
 
+    /**
+     * Returns each of the order's items to stock (e.g. when an order is rejected or
+     * cancelled after stock was already decremented at creation time).
+     */
+    public function restock(Order $order): void
+    {
+        DB::transaction(function () use ($order) {
+            $items = $order->items()->get(['id', 'product_id', 'product_variant_id', 'quantity']);
+
+            $productIds = $items->pluck('product_id')->all();
+            $variantIds = $items->pluck('product_variant_id')->filter()->all();
+
+            $products = Product::whereIn('id', $productIds)->lockForUpdate()->get()->keyBy('id');
+            $variants = $variantIds
+                ? ProductVariant::whereIn('id', $variantIds)->lockForUpdate()->get()->keyBy('id')
+                : collect();
+
+            foreach ($items as $item) {
+                if ($item->product_variant_id) {
+                    $variants->get($item->product_variant_id)?->increment('stock', $item->quantity);
+                } else {
+                    $products->get($item->product_id)?->increment('stock', $item->quantity);
+                }
+            }
+        });
+    }
+
     private function generateReference(): string
     {
         return 'LLK-'.now()->format('Y').'-'.Str::padLeft((string) random_int(1, 999999), 6, '0');

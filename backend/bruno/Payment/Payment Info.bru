@@ -1,0 +1,22 @@
+meta {
+  name: Payment Info
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/payment-info
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Public. Returns the manual bank transfer details shown at checkout (bank name, account
+  name/number, DuitNow ID) plus a customer-facing instructions string. No payment gateway is
+  connected yet — this is the interim "pay by bank transfer, upload a receipt" flow while
+  Billplz onboarding (business registration) is pending.
+}

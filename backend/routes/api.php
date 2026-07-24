@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\DeliveryZoneController as AdminDeliveryZoneController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\DeliveryZoneController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
@@ -29,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/delivery-zones', [DeliveryZoneController::class, 'index']);
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
@@ -50,6 +53,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
     Route::post('/orders/{order}/verify-payment', [AdminOrderController::class, 'verifyPayment']);
+
+    Route::get('/delivery-zones', [AdminDeliveryZoneController::class, 'index']);
+    Route::post('/delivery-zones', [AdminDeliveryZoneController::class, 'store']);
+    Route::put('/delivery-zones/{deliveryZone}', [AdminDeliveryZoneController::class, 'update']);
+    Route::delete('/delivery-zones/{deliveryZone}', [AdminDeliveryZoneController::class, 'destroy']);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
 });

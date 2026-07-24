@@ -9,6 +9,11 @@ const rules = [
   ['GET', /^orders$/],
   ['GET', /^orders\/\d+$/],
   ['PATCH', /^orders\/\d+\/status$/],
+  ['POST', /^orders\/\d+\/verify-payment$/],
+  ['GET', /^delivery-zones$/],
+  ['POST', /^delivery-zones$/],
+  ['PUT', /^delivery-zones\/\d+$/],
+  ['DELETE', /^delivery-zones\/\d+$/],
 ]
 
 export function normalizeAdminProxyPath(path) {

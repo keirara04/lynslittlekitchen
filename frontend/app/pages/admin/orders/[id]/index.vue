@@ -15,6 +15,22 @@ const { data: response, error } = await useAsyncData(`admin-order-${id}`, () => 
 const busy = ref(false)
 const updateError = ref('')
 const pendingTerminal = ref<OrderStatus | null>(null)
+const verifyingPayment = ref(false)
+const verifyPaymentError = ref('')
+
+async function verifyPayment() {
+  verifyingPayment.value = true
+  verifyPaymentError.value = ''
+  try {
+    const updated = await useAdminApi<{ data: AdminOrder }>(`orders/${id}/verify-payment`, { method: 'POST' })
+    response.value = updated
+    await refreshNuxtData('admin-dashboard')
+  }
+  catch (requestError: any) {
+    verifyPaymentError.value = requestError?.data?.data?.message ?? requestError?.data?.message ?? 'Could not verify payment.'
+  }
+  finally { verifyingPayment.value = false }
+}
 
 async function updateStatus(status: OrderStatus) {
   if (['rejected', 'cancelled'].includes(status) && pendingTerminal.value !== status) {
@@ -52,7 +68,34 @@ useSeoMeta({ title: () => `${response.value?.data.order_reference || 'Order'} | 
         <div class="admin-order-detail-stack">
           <section class="admin-detail-card admin-panel"><h2>Customer Information</h2><dl><div><dt>Name</dt><dd>{{ response.data.customer.name || 'Guest' }}</dd></div><div><dt>Phone</dt><dd>{{ response.data.customer.phone || '—' }}</dd></div><div><dt>Email</dt><dd>{{ response.data.customer.email || '—' }}</dd></div></dl></section>
           <section class="admin-detail-card admin-panel"><h2>Delivery Information</h2><dl><div><dt>Method</dt><dd>{{ humanizeStatus(response.data.delivery_method) }}</dd></div><div><dt>Address</dt><dd>{{ response.data.delivery_address || 'Pickup at Lyn’s Little Kitchen' }}</dd></div><div><dt>Zone</dt><dd>{{ response.data.delivery_zone?.name || '—' }}</dd></div><div><dt>Delivery date</dt><dd>{{ formatAdminDate(response.data.delivery_date) }}</dd></div><div><dt>Notes</dt><dd>{{ response.data.notes || 'No order notes' }}</dd></div></dl></section>
-          <section class="admin-detail-card admin-panel"><h2>Payment Information</h2><dl><div><dt>Status</dt><dd><AdminStatusBadge :status="response.data.payment_status" /></dd></div></dl></section>
+          <section class="admin-detail-card admin-panel">
+            <h2>Payment Information</h2>
+            <dl>
+              <div><dt>Status</dt><dd><AdminStatusBadge :status="response.data.payment_status" /></dd></div>
+              <div><dt>Method</dt><dd>Manual bank transfer</dd></div>
+              <div v-if="response.data.paid_at"><dt>Paid at</dt><dd>{{ formatAdminDate(response.data.paid_at, { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' }) }}</dd></div>
+            </dl>
+
+            <div v-if="response.data.payment_proof_url" class="admin-receipt-preview">
+              <p class="admin-editor-hint">Receipt uploaded {{ formatAdminDate(response.data.payment_proof_submitted_at, { day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }) }}</p>
+              <a :href="response.data.payment_proof_url" target="_blank" rel="noopener">
+                <img :src="response.data.payment_proof_url" alt="Payment receipt" class="admin-receipt-preview__image">
+              </a>
+            </div>
+            <p v-else class="admin-editor-hint">No receipt uploaded yet.</p>
+
+            <p v-if="verifyPaymentError" class="admin-field__error">{{ verifyPaymentError }}</p>
+            <button
+              v-if="response.data.payment_status !== 'paid'"
+              class="admin-button admin-button--primary"
+              type="button"
+              style="margin-top: .75rem; width: 100%;"
+              :disabled="verifyingPayment"
+              @click="verifyPayment"
+            >
+              {{ verifyingPayment ? 'Verifying…' : '✓ Accept Payment' }}
+            </button>
+          </section>
         </div>
         <div class="admin-order-detail-stack admin-order-detail-stack--wide">
           <AdminOrderItems :order="response.data" />

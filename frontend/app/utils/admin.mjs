@@ -21,12 +21,14 @@ export function formatAdminDate(value, options = {}) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return '—'
 
-  return new Intl.DateTimeFormat('en-MY', {
+  const formatted = new Intl.DateTimeFormat('en-MY', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
     ...options,
   }).format(date)
+
+  return formatted.replace(/\b(am|pm)\b/i, match => match.toUpperCase())
 }
 
 export function humanizeStatus(status) {

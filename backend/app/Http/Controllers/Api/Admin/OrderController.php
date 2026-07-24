@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\UpdateOrderStatusRequest;
 use App\Http\Resources\AdminOrderResource;
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrderController extends Controller
 {
+    public function __construct(private readonly OrderService $orderService) {}
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = Order::with(['user', 'items.product', 'items.productVariant', 'deliveryZone'])->latest();
@@ -46,7 +50,13 @@ class OrderController extends Controller
 
     public function updateStatus(UpdateOrderStatusRequest $request, Order $order): AdminOrderResource
     {
-        $order->update(['order_status' => $request->validated('order_status')]);
+        $newStatus = OrderStatus::from($request->validated('order_status'));
+
+        $order->update(['order_status' => $newStatus]);
+
+        if (in_array($newStatus, [OrderStatus::Rejected, OrderStatus::Cancelled], true)) {
+            $this->orderService->restock($order);
+        }
 
         return new AdminOrderResource(
             $order->load(['user', 'items.product', 'items.productVariant', 'deliveryZone'])

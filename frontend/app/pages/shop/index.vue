@@ -9,7 +9,11 @@ const category = ref('all')
 const sort = ref('featured')
 
 const categories = computed(() => {
-  const unique = new Map(products.value.map(product => [product.category.slug, product.category]))
+  const unique = new Map(
+    products.value
+      .filter(product => product.category)
+      .map(product => [product.category.slug, product.category]),
+  )
   return [{ name: 'All cookies', slug: 'all' }, ...unique.values()]
 })
 

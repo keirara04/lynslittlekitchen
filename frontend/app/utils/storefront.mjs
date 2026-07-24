@@ -12,6 +12,13 @@ const orderStatuses = [
   'completed',
 ]
 
+export function totalStock(product) {
+  if (product.variants?.length) {
+    return product.variants.reduce((sum, variant) => sum + Number(variant.stock), 0)
+  }
+  return Number(product.stock) || 0
+}
+
 export function formatRinggit(value) {
   const amount = Number(value)
   return `RM${Number.isFinite(amount) ? amount.toFixed(2) : '0.00'}`

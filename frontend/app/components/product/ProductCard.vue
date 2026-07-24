@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { Product } from '~/types/catalog'
-import { formatRinggit, resolveProductImage } from '~/utils/storefront.mjs'
+import { formatRinggit, resolveProductImage, totalStock } from '~/utils/storefront.mjs'
 
 const props = defineProps<{ product: Product, compact?: boolean }>()
 const cart = useCartStore()
 const added = ref(false)
+const stock = computed(() => totalStock(props.product))
 
 function quickAdd() {
   cart.addProduct(props.product, props.product.variants?.[0], 1)
@@ -28,9 +29,17 @@ function quickAdd() {
       <NuxtLink :to="`/shop/${product.slug}`" class="mt-1 block font-serif text-lg leading-tight hover:text-[#a85f4c]">
         {{ product.name }}
       </NuxtLink>
+      <p class="mt-1 text-xs font-semibold" :class="stock > 0 ? 'text-stone-500' : 'text-red-600'">
+        {{ stock > 0 ? `${stock} in stock` : 'Out of stock' }}
+      </p>
       <div class="mt-3 flex items-center justify-between gap-3">
         <strong class="text-sm">{{ product.variants?.length ? 'From ' : '' }}{{ formatRinggit(product.price) }}</strong>
-        <button class="grid h-10 w-10 place-items-center rounded-full border border-[#a85f4c55] text-[#854536] transition hover:bg-[#a85f4c] hover:text-white" :aria-label="`Add ${product.name} to cart`" @click="quickAdd">
+        <button
+          class="grid h-10 w-10 place-items-center rounded-full border border-[#a85f4c55] text-[#854536] transition hover:bg-[#a85f4c] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#854536]"
+          :aria-label="`Add ${product.name} to cart`"
+          :disabled="stock === 0"
+          @click="quickAdd"
+        >
           <span v-if="added" aria-hidden="true">✓</span>
           <svg v-else viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h2l2 10h10l2-7H6M10 19h.01M17 19h.01"/></svg>
         </button>

@@ -56,6 +56,9 @@ export interface AdminOrder {
   total: number
   delivery_fee: number
   payment_status: PaymentStatus
+  payment_proof_url: string | null
+  payment_proof_submitted_at: string | null
+  paid_at: string | null
   order_status: OrderStatus
   allowed_next_statuses: OrderStatus[]
   delivery_method: DeliveryMethod

@@ -3,6 +3,9 @@
 namespace Tests\Feature\Order\Admin;
 
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -85,5 +88,54 @@ class UpdateOrderStatusTest extends TestCase
             ->patchJson("/api/admin/orders/{$order->id}/status", ['order_status' => 'preparing']);
 
         $response->assertOk()->assertJsonPath('data.order_status', 'preparing');
+    }
+
+    public function test_rejecting_an_order_restocks_the_product(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $product = Product::factory()->create(['stock' => 5]);
+        $order = Order::factory()->create(['order_status' => 'pending']);
+        OrderItem::factory()->create(['order_id' => $order->id, 'product_id' => $product->id, 'quantity' => 3]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->patchJson("/api/admin/orders/{$order->id}/status", ['order_status' => 'rejected']);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 8]);
+    }
+
+    public function test_cancelling_an_order_restocks_the_variant(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $product = Product::factory()->create(['stock' => 5]);
+        $variant = ProductVariant::factory()->create(['product_id' => $product->id, 'stock' => 2]);
+        $order = Order::factory()->create(['order_status' => 'pending']);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant->id,
+            'quantity' => 4,
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->patchJson("/api/admin/orders/{$order->id}/status", ['order_status' => 'cancelled']);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('product_variants', ['id' => $variant->id, 'stock' => 6]);
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 5]);
+    }
+
+    public function test_completing_an_order_does_not_restock(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $product = Product::factory()->create(['stock' => 5]);
+        $order = Order::factory()->create(['order_status' => 'out_for_delivery', 'payment_status' => 'paid']);
+        OrderItem::factory()->create(['order_id' => $order->id, 'product_id' => $product->id, 'quantity' => 3]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->patchJson("/api/admin/orders/{$order->id}/status", ['order_status' => 'completed']);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 5]);
     }
 }
