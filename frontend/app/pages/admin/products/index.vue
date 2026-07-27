@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AdminCategoryManager from '~/components/admin/products/AdminCategoryManager.vue'
 import AdminProductFilters from '~/components/admin/products/AdminProductFilters.vue'
 import AdminProductTable from '~/components/admin/products/AdminProductTable.vue'
 import { buildAdminQuery } from '~/utils/admin.mjs'
-import type { AdminProduct, CategoriesResponse } from '~/types/admin'
+import type { AdminProduct } from '~/types/admin'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 
@@ -11,6 +12,7 @@ const searchDraft = ref(String(route.query.search || ''))
 const deleteTarget = ref<AdminProduct | null>(null)
 const deleting = ref(false)
 const actionError = ref('')
+const showCategoryManager = ref(false)
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
 const filters = computed(() => ({
@@ -22,7 +24,7 @@ const filters = computed(() => ({
 
 const apiQuery = computed(() => buildAdminQuery({ ...filters.value, per_page: 20 }))
 const { data: response, pending, error, refresh } = await useAdminProducts(apiQuery)
-const { data: categoryResponse } = await useAsyncData('admin-product-categories', () => useAdminApi<CategoriesResponse>('categories'))
+const { data: categoryResponse } = await useAdminCategories()
 
 function updateFilter(key: string, value: string | number) {
   const query = { ...route.query, [key]: value || undefined }
@@ -60,8 +62,13 @@ useSeoMeta({ title: "Products | Lyn's Admin", robots: 'noindex, nofollow' })
   <div class="admin-page">
     <header class="admin-page-heading">
       <div><p class="admin-kicker">Catalogue</p><h1>Products</h1><p>Manage cookies, pricing, variants, and inventory.</p></div>
-      <NuxtLink to="/admin/products/new" class="admin-button admin-button--primary">＋ New Product</NuxtLink>
+      <div class="admin-header-actions">
+        <button class="admin-button admin-button--secondary" type="button" @click="showCategoryManager = !showCategoryManager">{{ showCategoryManager ? 'Hide categories' : 'Manage categories' }}</button>
+        <NuxtLink to="/admin/products/new" class="admin-button admin-button--primary">＋ New Product</NuxtLink>
+      </div>
     </header>
+
+    <AdminCategoryManager v-if="showCategoryManager" />
 
     <AdminProductFilters
       :search="searchDraft"

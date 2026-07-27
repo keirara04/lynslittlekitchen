@@ -93,6 +93,7 @@
 .admin-page-heading { display: flex; min-height: 58px; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .admin-page-heading h1 { font-family: var(--serif); font-size: clamp(1.45rem, 2.5vw, 2rem); letter-spacing: -.035em; }
 .admin-page-heading > div > p:last-child { margin-top: .38rem; color: var(--admin-muted); font-size: .7rem; }
+.admin-header-actions { display: flex; align-items: center; gap: .7rem; }
 .admin-panel { border: 1px solid var(--admin-line); border-radius: .72rem; background: var(--admin-paper); box-shadow: 0 8px 30px rgba(71, 43, 32, .035); }
 .admin-panel > h2 { padding: 1.1rem 1.25rem 0; font-family: var(--serif); font-size: 1.05rem; }
 .admin-panel > .admin-form-error { padding: 0 1.25rem; }
