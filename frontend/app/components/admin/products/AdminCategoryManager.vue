@@ -4,7 +4,7 @@ import type { Category } from '~/types/catalog'
 const { data: response, pending, error, refresh } = await useAdminCategories()
 
 const editing = ref<Category | null>(null)
-const form = reactive({ name: '', slug: '' })
+const form = reactive({ name: '', name_ms: '', slug: '' })
 const serverErrors = ref<Record<string, string[]>>({})
 const formError = ref('')
 const busy = ref(false)
@@ -15,6 +15,7 @@ const actionError = ref('')
 function startCreate() {
   editing.value = null
   form.name = ''
+  form.name_ms = ''
   form.slug = ''
   serverErrors.value = {}
   formError.value = ''
@@ -23,6 +24,7 @@ function startCreate() {
 function startEdit(category: Category) {
   editing.value = category
   form.name = category.name
+  form.name_ms = category.name_ms || ''
   form.slug = category.slug
   serverErrors.value = {}
   formError.value = ''
@@ -32,7 +34,7 @@ async function save() {
   busy.value = true
   serverErrors.value = {}
   formError.value = ''
-  const payload = { name: form.name.trim(), slug: form.slug.trim() || null }
+  const payload = { name: form.name.trim(), name_ms: form.name_ms.trim() || null, slug: form.slug.trim() || null }
 
   try {
     if (editing.value) {
@@ -82,6 +84,10 @@ async function confirmDelete() {
         <span>Category name</span>
         <input v-model.trim="form.name" required placeholder="e.g. Signature Cakes">
         <small v-if="serverErrors.name" class="admin-field__error">{{ serverErrors.name[0] }}</small>
+      </label>
+      <label class="admin-field">
+        <span>Category name (Malay)</span>
+        <input v-model.trim="form.name_ms" placeholder="Optional — falls back to English if left blank">
       </label>
       <label class="admin-field">
         <span>Slug</span>

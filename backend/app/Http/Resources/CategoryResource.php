@@ -20,6 +20,7 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->localized($request, 'name'),
+            'name_ms' => $this->name_ms,
             'slug' => $this->slug,
         ];
     }
