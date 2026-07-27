@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DeliveryZoneController as AdminDeliveryZoneController;
@@ -47,6 +48,11 @@ Route::get('/payment-info', [PaymentController::class, 'info']);
 Route::get('/store-settings', [SettingController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/categories', [AdminCategoryController::class, 'index']);
+    Route::post('/categories', [AdminCategoryController::class, 'store']);
+    Route::put('/categories/{category}', [AdminCategoryController::class, 'update']);
+    Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy']);
+
     Route::get('/products', [AdminProductController::class, 'index']);
     Route::get('/products/{product}', [AdminProductController::class, 'show']);
     Route::post('/products', [AdminProductController::class, 'store']);
