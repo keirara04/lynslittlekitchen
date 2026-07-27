@@ -1,6 +1,9 @@
 const rules = [
   ['GET', /^dashboard$/],
   ['GET', /^categories$/],
+  ['POST', /^categories$/],
+  ['PUT', /^categories\/\d+$/],
+  ['DELETE', /^categories\/\d+$/],
   ['GET', /^products$/],
   ['POST', /^products$/],
   ['GET', /^products\/\d+$/],
