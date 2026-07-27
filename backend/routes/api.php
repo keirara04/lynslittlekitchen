@@ -40,7 +40,7 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 
 Route::middleware('throttle:20,1')->post('/orders', [OrderController::class, 'store']);
-Route::get('/orders/{reference}', [OrderController::class, 'show']);
+Route::middleware('throttle:20,1')->get('/orders/{reference}', [OrderController::class, 'show']);
 Route::middleware('throttle:20,1')->post('/orders/{reference}/payment-proof', [OrderController::class, 'submitProof']);
 
 Route::get('/payment-info', [PaymentController::class, 'info']);

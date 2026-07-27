@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules
+vendor
+tests
+bruno
+.git
+.github
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
