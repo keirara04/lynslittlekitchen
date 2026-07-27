@@ -27,6 +27,7 @@ class UpdateProductRequest extends FormRequest
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
             'status' => ['sometimes', 'required', Rule::enum(ProductStatus::class)],
+            'is_signature' => ['sometimes', 'boolean'],
             'images' => ['sometimes', 'nullable', 'array'],
             'images.*' => ['string', 'url'],
             'variants' => ['sometimes', 'nullable', 'array'],

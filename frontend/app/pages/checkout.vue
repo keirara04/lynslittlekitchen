@@ -16,7 +16,12 @@ interface PaymentInfo {
 }
 
 const { data: paymentInfo } = await useAsyncData<PaymentInfo>('payment-info', () =>
-  $fetch<PaymentInfo>('/payment-info', { baseURL: config.public.apiBase }))
+  $fetch<PaymentInfo>('/payment-info', { baseURL: config.public.apiBase }), { getCachedData: () => undefined })
+
+const { data: storeSettings } = await useStoreSettings()
+const allowPickup = computed(() => storeSettings.value?.allow_pickup ?? true)
+const allowDelivery = computed(() => storeSettings.value?.allow_delivery ?? true)
+const minOrderAmount = computed(() => storeSettings.value?.min_order_amount ?? null)
 
 const { upload: uploadReceipt, uploading: receiptUploading, error: receiptUploadError } = useCloudinaryUpload()
 const receiptFileInput = ref<HTMLInputElement>()
@@ -32,10 +37,10 @@ interface DeliveryZone {
 }
 
 const { data: zonesResponse } = await useAsyncData<{ data: DeliveryZone[] }>('delivery-zones', () =>
-  $fetch<{ data: DeliveryZone[] }>('/delivery-zones', { baseURL: config.public.apiBase }))
+  $fetch<{ data: DeliveryZone[] }>('/delivery-zones', { baseURL: config.public.apiBase }), { getCachedData: () => undefined })
 const zones = computed(() => zonesResponse.value?.data ?? [])
 
-const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10)
+const minDeliveryDate = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10)
 const form = reactive({
   guest_name: '',
   guest_phone: '',
@@ -43,12 +48,17 @@ const form = reactive({
   delivery_method: 'delivery',
   delivery_zone_id: null as number | null,
   delivery_address: '',
-  delivery_date: tomorrow,
+  delivery_date: minDeliveryDate,
   notes: cart.note,
 })
 
 watch(zones, (list) => {
-  if (list.length && !form.delivery_zone_id) form.delivery_zone_id = list[0].id
+  if (list[0] && !form.delivery_zone_id) form.delivery_zone_id = list[0].id
+}, { immediate: true })
+
+watch([allowDelivery, allowPickup], ([delivery, pickup]) => {
+  if (form.delivery_method === 'delivery' && !delivery && pickup) form.delivery_method = 'pickup'
+  else if (form.delivery_method === 'pickup' && !pickup && delivery) form.delivery_method = 'delivery'
 }, { immediate: true })
 
 watch(() => [form.delivery_method, form.delivery_zone_id], () => {
@@ -67,6 +77,10 @@ async function placeOrder() {
   }
   if (form.delivery_method === 'delivery' && !form.delivery_address.trim()) {
     submitError.value = 'Enter a delivery address or choose pickup.'
+    return
+  }
+  if (minOrderAmount.value !== null && cart.totals.subtotal < minOrderAmount.value) {
+    submitError.value = `Minimum order amount is RM${minOrderAmount.value.toFixed(2)}. Add a few more treats to continue.`
     return
   }
 
@@ -88,7 +102,6 @@ async function placeOrder() {
       },
     })
     confirmation.value = response.data
-    cart.clear()
   }
   catch (error: any) {
     submitError.value = error?.data?.message || 'We could not create the order. Check that Laravel is running and try again.'
@@ -133,6 +146,7 @@ async function submitProof() {
       body: { phone: form.guest_phone, proof_url: receiptUrl.value },
     })
     proofSubmitted.value = true
+    cart.clear()
   }
   catch (error: any) {
     proofError.value = error?.data?.message || 'Could not submit your receipt. Please try again.'
@@ -216,9 +230,10 @@ async function submitProof() {
         <fieldset class="mt-7">
           <legend class="text-xs font-bold uppercase tracking-wider">Delivery method</legend>
           <div class="mt-3 grid grid-cols-2 gap-3">
-            <label class="cursor-pointer"><input v-model="form.delivery_method" class="peer sr-only" type="radio" value="delivery"><span class="grid min-h-16 place-items-center rounded-xl border bg-white text-sm font-bold peer-checked:border-[#a85f4c] peer-checked:bg-[#f4ded2]">Local delivery</span></label>
-            <label class="cursor-pointer"><input v-model="form.delivery_method" class="peer sr-only" type="radio" value="pickup"><span class="grid min-h-16 place-items-center rounded-xl border bg-white text-sm font-bold peer-checked:border-[#a85f4c] peer-checked:bg-[#f4ded2]">Pickup</span></label>
+            <label v-if="allowDelivery" class="cursor-pointer"><input v-model="form.delivery_method" class="peer sr-only" type="radio" value="delivery"><span class="grid min-h-16 place-items-center rounded-xl border bg-white text-sm font-bold peer-checked:border-[#a85f4c] peer-checked:bg-[#f4ded2]">Local delivery</span></label>
+            <label v-if="allowPickup" class="cursor-pointer"><input v-model="form.delivery_method" class="peer sr-only" type="radio" value="pickup"><span class="grid min-h-16 place-items-center rounded-xl border bg-white text-sm font-bold peer-checked:border-[#a85f4c] peer-checked:bg-[#f4ded2]">Pickup</span></label>
           </div>
+          <p v-if="minOrderAmount" class="mt-2 text-xs text-stone-500">Minimum order: RM{{ minOrderAmount.toFixed(2) }}</p>
         </fieldset>
 
         <div class="mt-6 grid gap-5 sm:grid-cols-2">
@@ -227,7 +242,7 @@ async function submitProof() {
               <option v-for="zone in zones" :key="zone.id" :value="zone.id">{{ zone.name }} · RM{{ zone.price.toFixed(2) }}</option>
             </select>
           </label>
-          <label class="form-label">Preferred date *<input v-model="form.delivery_date" class="form-input" type="date" :min="tomorrow" required></label>
+          <label class="form-label">Preferred date *<input v-model="form.delivery_date" class="form-input" type="date" :min="minDeliveryDate" required><small class="mt-1 block text-xs text-stone-500">At least 3 days from today</small></label>
           <label v-if="form.delivery_method === 'delivery'" class="form-label sm:col-span-2">Delivery address *<textarea v-model="form.delivery_address" class="form-textarea" autocomplete="street-address" required /></label>
           <label class="form-label sm:col-span-2">Order notes<textarea v-model="form.notes" class="form-textarea" placeholder="Anything the kitchen should know?" /></label>
         </div>

@@ -29,6 +29,7 @@ export interface Product {
   stock: number
   in_stock: boolean
   status: string
+  is_signature: boolean
   category: Category
   images: ProductImage[]
   variants: ProductVariant[]

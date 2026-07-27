@@ -4,12 +4,15 @@ namespace App\Services;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\Exceptions\DeliveryMethodUnavailableException;
 use App\Exceptions\InsufficientStockException;
 use App\Exceptions\InvalidOrderItemException;
+use App\Exceptions\MinimumOrderAmountException;
 use App\Models\DeliveryZone;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\StoreSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,10 +25,21 @@ class OrderService
      *
      * @throws InsufficientStockException
      * @throws InvalidOrderItemException
+     * @throws DeliveryMethodUnavailableException
+     * @throws MinimumOrderAmountException
      */
     public function create(array $items, array $attributes, ?User $user = null): Order
     {
         return DB::transaction(function () use ($items, $attributes, $user) {
+            $settings = StoreSetting::current();
+
+            if ($attributes['delivery_method'] === 'pickup' && ! $settings->allow_pickup) {
+                throw new DeliveryMethodUnavailableException('pickup');
+            }
+            if ($attributes['delivery_method'] === 'delivery' && ! $settings->allow_delivery) {
+                throw new DeliveryMethodUnavailableException('delivery');
+            }
+
             $productIds = array_column($items, 'product_id');
             $variantIds = array_filter(array_column($items, 'product_variant_id'));
 
@@ -33,6 +47,8 @@ class OrderService
             $variants = $variantIds
                 ? ProductVariant::whereIn('id', $variantIds)->lockForUpdate()->get()->keyBy('id')
                 : collect();
+
+            $itemsTotal = 0;
 
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
@@ -51,9 +67,19 @@ class OrderService
                     if ($variant->stock < $item['quantity']) {
                         throw new InsufficientStockException("{$product->name} ({$variant->label})");
                     }
-                } elseif ($product->stock < $item['quantity']) {
-                    throw new InsufficientStockException($product->name);
+
+                    $itemsTotal += (float) $variant->price * $item['quantity'];
+                } else {
+                    if ($product->stock < $item['quantity']) {
+                        throw new InsufficientStockException($product->name);
+                    }
+
+                    $itemsTotal += (float) $product->price * $item['quantity'];
                 }
+            }
+
+            if ($settings->min_order_amount !== null && $itemsTotal < (float) $settings->min_order_amount) {
+                throw new MinimumOrderAmountException((float) $settings->min_order_amount);
             }
 
             $deliveryFee = 0;

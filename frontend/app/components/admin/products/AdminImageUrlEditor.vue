@@ -34,7 +34,7 @@ function move(index: number, direction: -1 | 1) {
   const target = index + direction
   if (target < 0 || target >= model.value.length) return
   const rows = [...model.value]
-  ;[rows[index], rows[target]] = [rows[target], rows[index]]
+  ;[rows[index], rows[target]] = [rows[target]!, rows[index]!]
   model.value = rows
 }
 </script>

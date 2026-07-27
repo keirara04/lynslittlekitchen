@@ -27,6 +27,7 @@ class StoreProductRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', Rule::enum(ProductStatus::class)],
+            'is_signature' => ['sometimes', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['string', 'url'],
             'variants' => ['nullable', 'array'],

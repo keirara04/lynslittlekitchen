@@ -25,6 +25,7 @@ class ProductResource extends JsonResource
             'stock' => $this->stock,
             'in_stock' => $this->stock > 0,
             'status' => $this->status->value,
+            'is_signature' => $this->is_signature,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'images' => ProductImageResource::collection($this->whenLoaded('images')),
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),

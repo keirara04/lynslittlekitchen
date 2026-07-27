@@ -41,7 +41,7 @@ class StoreOrderRequest extends FormRequest
                 'string',
                 'max:500',
             ],
-            'delivery_date' => ['required', 'date', 'after_or_equal:today'],
+            'delivery_date' => ['required', 'date', 'after_or_equal:'.now()->addDays(3)->toDateString()],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

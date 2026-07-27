@@ -19,7 +19,7 @@ function quickAdd() {
     <NuxtLink :to="`/shop/${product.slug}`" class="block">
       <div class="product-image-frame">
         <img :src="resolveProductImage(product.slug, product.images)" :alt="product.name" width="640" height="640">
-        <span v-if="product.slug === 'choc-chip-crunch' || product.slug === 'dubai-chewy-cookie'" class="absolute left-3 top-3 rounded-full bg-[#fffaf5]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#854536]">
+        <span v-if="product.is_signature" class="absolute left-3 top-3 rounded-full bg-[#fffaf5]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#854536]">
           Our signature
         </span>
       </div>

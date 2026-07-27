@@ -50,6 +50,7 @@ class ProductController extends Controller
         unset($data['images'], $data['variants']);
 
         $data['slug'] = $this->uniqueSlug($data['name']);
+        $data['is_signature'] = $data['is_signature'] ?? false;
 
         $product = Product::create($data);
 

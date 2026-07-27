@@ -19,7 +19,7 @@ class OrderController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Order::with(['user', 'items.product', 'items.productVariant', 'deliveryZone'])->latest();
+        $query = Order::proofSubmitted()->with(['user', 'items.product', 'items.productVariant', 'deliveryZone'])->latest();
 
         if ($search = $request->string('search')->trim()->value()) {
             $needle = '%'.mb_strtolower($search).'%';

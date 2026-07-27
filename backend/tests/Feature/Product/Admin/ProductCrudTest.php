@@ -59,6 +59,33 @@ class ProductCrudTest extends TestCase
         $response->assertOk()->assertJsonPath('data.stock', 99);
     }
 
+    public function test_an_admin_can_toggle_the_signature_flag(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $product = Product::factory()->create(['is_signature' => false]);
+
+        $response = $this->actingAs($admin, 'sanctum')->putJson("/api/admin/products/{$product->id}", [
+            'is_signature' => true,
+        ]);
+
+        $response->assertOk()->assertJsonPath('data.is_signature', true);
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'is_signature' => true]);
+    }
+
+    public function test_new_products_default_to_not_signature(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin, 'sanctum')->postJson('/api/admin/products', [
+            'name' => 'Plain Cookie',
+            'price' => 10,
+            'stock' => 5,
+            'status' => 'active',
+        ]);
+
+        $response->assertCreated()->assertJsonPath('data.is_signature', false);
+    }
+
     public function test_an_admin_can_delete_a_product(): void
     {
         $admin = User::factory()->admin()->create();

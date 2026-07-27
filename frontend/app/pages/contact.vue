@@ -1,5 +1,12 @@
 <script setup lang="ts">
 useSeoMeta({ title: "Contact | Lyn's Little Kitchen" })
+
+const { data: storeSettings } = await useStoreSettings()
+const location = computed(() => {
+  const parts = [storeSettings.value?.city, storeSettings.value?.state].filter(Boolean)
+  return parts.length ? parts.join(', ') + ', Malaysia' : 'Jasin, Melaka, Malaysia'
+})
+const hours = computed(() => storeSettings.value?.operating_hours || 'Monday–Saturday · 9am–6pm')
 </script>
 
 <template>
@@ -10,8 +17,8 @@ useSeoMeta({ title: "Contact | Lyn's Little Kitchen" })
         <h1 class="display-title mt-4 text-5xl sm:text-6xl">Questions before you order?</h1>
         <p class="mt-5 text-sm leading-7 text-stone-600">Ask about delivery, allergens, larger orders or the next available bake date.</p>
         <div class="mt-8 grid gap-4 text-sm">
-          <div class="paper-card p-5"><p class="text-xs font-bold uppercase tracking-wider text-[#a85f4c]">Location</p><p class="mt-2">Jasin, Melaka, Malaysia</p></div>
-          <div class="paper-card p-5"><p class="text-xs font-bold uppercase tracking-wider text-[#a85f4c]">Response hours</p><p class="mt-2">Monday–Saturday · 9am–6pm</p></div>
+          <div class="paper-card p-5"><p class="text-xs font-bold uppercase tracking-wider text-[#a85f4c]">Location</p><p class="mt-2">{{ location }}</p></div>
+          <div class="paper-card p-5"><p class="text-xs font-bold uppercase tracking-wider text-[#a85f4c]">Response hours</p><p class="mt-2">{{ hours }}</p></div>
         </div>
       </section>
 

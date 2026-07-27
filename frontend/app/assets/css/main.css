@@ -160,6 +160,7 @@ img {
 
 .form-label {
   display: grid;
+  align-content: start;
   gap: .45rem;
   color: var(--cocoa);
   font-size: .78rem;

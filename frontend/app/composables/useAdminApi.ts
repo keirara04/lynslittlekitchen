@@ -9,7 +9,7 @@ export async function useAdminApi<T>(path: string, options: AdminApiOptions = {}
 
   try {
     const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
-    return await $fetch<T>(`/api/admin-proxy/${normalized}`, { ...options, headers })
+    return await ($fetch(`/api/admin-proxy/${normalized}`, { ...options, headers } as any) as Promise<T>)
   }
   catch (error: any) {
     const status = Number(error?.statusCode ?? error?.response?.status)

@@ -1,15 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DeliveryZoneController as AdminDeliveryZoneController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Api\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DeliveryZoneController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SettingController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +44,7 @@ Route::get('/orders/{reference}', [OrderController::class, 'show']);
 Route::middleware('throttle:20,1')->post('/orders/{reference}/payment-proof', [OrderController::class, 'submitProof']);
 
 Route::get('/payment-info', [PaymentController::class, 'info']);
+Route::get('/store-settings', [SettingController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/products', [AdminProductController::class, 'index']);
@@ -60,4 +64,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::delete('/delivery-zones/{deliveryZone}', [AdminDeliveryZoneController::class, 'destroy']);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    Route::get('/customers', [AdminCustomerController::class, 'index']);
+
+    Route::get('/settings', [AdminSettingController::class, 'show']);
+    Route::put('/settings', [AdminSettingController::class, 'update']);
 });

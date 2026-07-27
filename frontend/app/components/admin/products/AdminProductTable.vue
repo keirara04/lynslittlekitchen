@@ -17,7 +17,7 @@ defineEmits<{ delete: [product: AdminProduct] }>()
           <td data-label="Product">
             <div class="admin-product-cell">
               <img :src="adminProductImage(product)" :alt="product.name">
-              <div><strong>{{ product.name }}</strong><small>{{ formatAdminCurrency(product.price) }}</small></div>
+              <div><strong>{{ product.name }}</strong><span v-if="product.is_signature" class="admin-status admin-status--success" style="margin-left: .4rem;">Signature</span><small>{{ formatAdminCurrency(product.price) }}</small></div>
             </div>
           </td>
           <td data-label="Category">{{ product.category?.name || 'Uncategorised' }}</td>

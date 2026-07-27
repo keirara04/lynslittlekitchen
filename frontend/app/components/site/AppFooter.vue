@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const { data: storeSettings } = await useStoreSettings()
+const location = computed(() => {
+  const parts = [storeSettings.value?.city, storeSettings.value?.state].filter(Boolean)
+  return parts.length ? parts.join(', ') + ', Malaysia' : 'Jasin, Melaka, Malaysia'
+})
+</script>
+
 <template>
   <footer class="site-footer mt-20">
     <div class="container-shell grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -23,7 +31,7 @@
       <div>
         <h2 class="text-xs font-bold uppercase tracking-[.14em]">Let’s connect</h2>
         <p class="mt-4 text-sm text-white/70">Instagram · Facebook · WhatsApp</p>
-        <p class="mt-3 text-sm text-white/70">Jasin, Melaka, Malaysia</p>
+        <p class="mt-3 text-sm text-white/70">{{ location }}</p>
       </div>
     </div>
     <div class="border-t border-white/10 py-5 text-center text-xs text-white/55">

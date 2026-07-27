@@ -21,10 +21,10 @@ class DashboardTest extends TestCase
         $popularButUnpaid = Product::factory()->create(['name' => 'Unpaid Favourite']);
         $paidProduct = Product::factory()->create(['name' => 'Paid Seller']);
 
-        $unpaidOrder = Order::factory()->create(['payment_status' => 'unpaid']);
+        $unpaidOrder = Order::factory()->create(['payment_status' => 'unpaid', 'payment_proof_submitted_at' => now()]);
         OrderItem::factory()->create(['order_id' => $unpaidOrder->id, 'product_id' => $popularButUnpaid->id, 'quantity' => 100]);
 
-        $paidOrder = Order::factory()->create(['payment_status' => 'paid']);
+        $paidOrder = Order::factory()->create(['payment_status' => 'paid', 'payment_proof_submitted_at' => now()]);
         OrderItem::factory()->create(['order_id' => $paidOrder->id, 'product_id' => $paidProduct->id, 'quantity' => 1]);
 
         $response = $this->actingAs($admin, 'sanctum')->getJson('/api/admin/dashboard');
@@ -61,10 +61,12 @@ class DashboardTest extends TestCase
         $pending = Order::factory()->create([
             'guest_name' => 'Pending Customer',
             'order_status' => 'pending',
+            'payment_proof_submitted_at' => now(),
         ]);
         Order::factory()->create([
             'guest_name' => 'Completed Customer',
             'order_status' => 'completed',
+            'payment_proof_submitted_at' => now(),
         ]);
 
         $this->actingAs($admin, 'sanctum')
@@ -88,5 +90,20 @@ class DashboardTest extends TestCase
                     'created_at',
                 ]],
             ]);
+    }
+
+    public function test_orders_without_a_submitted_receipt_are_invisible_to_the_dashboard(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Order::factory()->create([
+            'guest_name' => 'Awaiting Receipt',
+            'payment_proof_submitted_at' => null,
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')->getJson('/api/admin/dashboard');
+
+        $response->assertOk()
+            ->assertJsonPath('total_orders', 0)
+            ->assertJsonCount(0, 'recent_orders');
     }
 }

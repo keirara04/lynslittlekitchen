@@ -1,16 +1,36 @@
 <script setup lang="ts">
 import { resolveProductImage } from '~/utils/storefront.mjs'
+import type { FeaturedProduct } from '~/composables/useStoreSettings'
+
+const { data: products } = useCatalog()
+const featured = computed(() => products.value.slice(0, 6))
+
+const { data: storeSettings } = await useStoreSettings()
+
+function fallbackFeatured(index: number): FeaturedProduct | null {
+  const product = products.value[index]
+  if (!product) return null
+  return {
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    image_url: product.images[0]?.url ?? null,
+  }
+}
+
+const heroProduct = computed(() => storeSettings.value?.featured_hero_product ?? fallbackFeatured(0))
+const bannerProduct = computed(() => storeSettings.value?.featured_banner_product ?? fallbackFeatured(1) ?? fallbackFeatured(0))
+
+const heroImageSrc = computed(() => heroProduct.value?.image_url || resolveProductImage(heroProduct.value?.slug ?? ''))
+const bannerImageSrc = computed(() => bannerProduct.value?.image_url || resolveProductImage(bannerProduct.value?.slug ?? ''))
 
 useSeoMeta({
   title: "Lyn's Little Kitchen | Fresh cookies in Jasin, Melaka",
   description: 'Small-batch cookies baked fresh in Jasin. Shop Choc Chip Crunch, Dubai Chewy Cookie and our developing menu.',
   ogTitle: "Lyn's Little Kitchen",
   ogDescription: 'Little cookies, big happiness—baked fresh in Jasin, Melaka.',
-  ogImage: '/images/products/choc-chip-crunch-temp.png',
+  ogImage: () => heroImageSrc.value,
 })
-
-const { data: products } = useCatalog()
-const featured = computed(() => products.value.slice(0, 6))
 
 const process = [
   ['Browse', 'Choose your cookies'],
@@ -38,7 +58,7 @@ const process = [
           <p class="mt-6 text-xs font-semibold text-[#78825e]">● Fresh batches · Preorder recommended</p>
         </div>
         <div class="hero-photo-wrap">
-          <img class="hero-photo" :src="resolveProductImage('choc-chip-crunch')" alt="A stack of Choc Chip Crunch cookies" width="900" height="900">
+          <img class="hero-photo" :src="heroImageSrc" :alt="heroProduct ? `A stack of ${heroProduct.name} cookies` : 'Freshly baked cookies'" width="900" height="900">
           <span class="hero-stamp">Baked<br>in small<br>batches</span>
           <span class="crumb-trail" aria-hidden="true">• · • ·</span>
         </div>
@@ -74,10 +94,10 @@ const process = [
         </article>
 
         <div class="relative min-h-72 overflow-hidden rounded-[1.2rem]">
-          <img src="/images/products/dubai-chewy-cookie-temp.png" alt="Dubai Chewy Cookie with pistachio filling" class="absolute inset-0 h-full w-full object-cover" width="800" height="800">
-          <div class="absolute inset-x-4 bottom-4 rounded-xl bg-[#fffaf5]/90 p-4 backdrop-blur">
-            <p class="font-serif text-xl">The chewy one</p>
-            <p class="mt-1 text-xs text-stone-600">Chocolate, pistachio cream and toasted kataifi.</p>
+          <img :src="bannerImageSrc" :alt="bannerProduct?.name || 'Freshly baked cookies'" class="absolute inset-0 h-full w-full object-cover" width="800" height="800">
+          <div v-if="bannerProduct" class="absolute inset-x-4 bottom-4 rounded-xl bg-[#fffaf5]/90 p-4 backdrop-blur">
+            <p class="font-serif text-xl">{{ bannerProduct.name }}</p>
+            <p v-if="bannerProduct.description" class="mt-1 text-xs text-stone-600 line-clamp-2">{{ bannerProduct.description }}</p>
           </div>
         </div>
 

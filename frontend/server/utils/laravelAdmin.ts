@@ -16,7 +16,7 @@ export async function requestLaravel<T>(
   const token = options.token ?? readAdminToken(event)
 
   try {
-    return await $fetch<T>(path, {
+    return await ($fetch(path, {
       baseURL: config.apiBase,
       method: options.method ?? 'GET',
       body: options.body,
@@ -25,7 +25,7 @@ export async function requestLaravel<T>(
         Accept: 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-    })
+    } as any) as Promise<T>)
   }
   catch (error: any) {
     const statusCode = Number(error?.response?.status ?? error?.statusCode ?? 500)

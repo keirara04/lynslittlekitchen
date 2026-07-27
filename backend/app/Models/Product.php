@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'category_id', 'name', 'slug', 'description', 'ingredients',
-    'allergens', 'price', 'stock', 'status',
+    'allergens', 'price', 'stock', 'status', 'is_signature',
 ])]
 class Product extends Model
 {
@@ -29,6 +29,7 @@ class Product extends Model
             'price' => 'decimal:2',
             'stock' => 'integer',
             'status' => ProductStatus::class,
+            'is_signature' => 'boolean',
         ];
     }
 

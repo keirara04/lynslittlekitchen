@@ -3,6 +3,7 @@
 namespace Tests\Feature\Payment;
 
 use App\Models\Order;
+use App\Models\StoreSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,6 +19,17 @@ class ManualPaymentTest extends TestCase
         $response->assertOk()->assertJsonStructure([
             'method', 'bank_name', 'bank_account_name', 'bank_account_number', 'duitnow_id', 'instructions',
         ]);
+    }
+
+    public function test_payment_info_prefers_settings_over_env_config(): void
+    {
+        StoreSetting::current()->update(['bank_name' => 'Maybank', 'duitnow_id' => '012-3456789']);
+
+        $response = $this->getJson('/api/payment-info');
+
+        $response->assertOk()
+            ->assertJsonPath('bank_name', 'Maybank')
+            ->assertJsonPath('duitnow_id', '012-3456789');
     }
 
     public function test_a_guest_can_submit_a_payment_proof_for_their_order(): void

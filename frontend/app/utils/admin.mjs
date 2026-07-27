@@ -76,6 +76,7 @@ export function toProductPayload(form) {
     price: Number(form.price || 0),
     stock: Number(form.stock || 0),
     status: form.status,
+    is_signature: Boolean(form.is_signature),
     images: (form.images || []).map(image => String(image.url || '').trim()).filter(Boolean),
     variants: (form.variants || []).map(variant => ({
       label: String(variant.label || '').trim(),

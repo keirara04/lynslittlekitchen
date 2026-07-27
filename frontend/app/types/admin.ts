@@ -33,6 +33,52 @@ export interface AdminCustomerSummary {
   email: string | null
 }
 
+export interface AdminCustomer {
+  id: number | string
+  name: string | null
+  email: string | null
+  phone: string | null
+  orders_count: number
+  total_spent: number
+  last_order_at: string | null
+  status: 'active' | 'inactive'
+}
+
+export interface AdminSettings {
+  id: number
+  store_name: string | null
+  business_registration_no: string | null
+  business_type: string | null
+  established_since: string | null
+  address_line1: string | null
+  address_line2: string | null
+  postcode: string | null
+  city: string | null
+  state: string | null
+
+  contact_phone: string | null
+  contact_email: string | null
+  operating_hours: string | null
+
+  min_order_amount: number | null
+  lead_time_days: number | null
+  order_cutoff_time: string | null
+  allow_pickup: boolean
+  allow_delivery: boolean
+
+  bank_name: string | null
+  bank_account_name: string | null
+  bank_account_number: string | null
+  duitnow_id: string | null
+
+  alert_email: string | null
+  new_order_email_enabled: boolean
+  low_stock_threshold: number | null
+
+  featured_hero_product_id: number | null
+  featured_banner_product_id: number | null
+}
+
 export interface AdminDeliveryZone {
   id: number
   name: string
@@ -127,6 +173,7 @@ export interface ProductFormData {
   price: number | string
   stock: number | string
   status: ProductStatus
+  is_signature: boolean
   images: Array<Pick<ProductImage, 'url'>>
   variants: Array<Pick<ProductVariant, 'label' | 'price' | 'stock'>>
 }
@@ -140,6 +187,7 @@ export interface StoreProductPayload {
   price: number
   stock: number
   status: ProductStatus
+  is_signature: boolean
   images: string[]
   variants: Array<{ label: string; price: number; stock: number }>
 }

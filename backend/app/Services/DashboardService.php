@@ -17,11 +17,11 @@ class DashboardService
      */
     public function summary(): array
     {
-        $paidOrders = Order::where('payment_status', PaymentStatus::Paid);
+        $paidOrders = Order::proofSubmitted()->where('payment_status', PaymentStatus::Paid);
 
         return [
             'todays_sales' => (float) (clone $paidOrders)->whereDate('created_at', today())->sum('total'),
-            'total_orders' => Order::count(),
+            'total_orders' => Order::proofSubmitted()->count(),
             'monthly_revenue' => (float) (clone $paidOrders)
                 ->whereYear('created_at', now()->year)
                 ->whereMonth('created_at', now()->month)
@@ -38,7 +38,7 @@ class DashboardService
      */
     private function ordersByStatus(): array
     {
-        $counts = Order::query()
+        $counts = Order::proofSubmitted()
             ->select('order_status', DB::raw('COUNT(*) as aggregate'))
             ->groupBy('order_status')
             ->pluck('aggregate', 'order_status');
@@ -55,7 +55,7 @@ class DashboardService
      */
     private function recentOrders(): array
     {
-        return Order::query()
+        return Order::proofSubmitted()
             ->with('user:id,name')
             ->latest()
             ->limit(5)
@@ -83,6 +83,7 @@ class DashboardService
         $row = OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->where('orders.payment_status', PaymentStatus::Paid)
+            ->whereNotNull('orders.payment_proof_submitted_at')
             ->select('order_items.product_id', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->groupBy('order_items.product_id')
             ->orderByDesc('total_sold')

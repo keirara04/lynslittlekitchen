@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\PaymentStatus;
+use App\Exceptions\DeliveryMethodUnavailableException;
 use App\Exceptions\InsufficientStockException;
 use App\Exceptions\InvalidOrderItemException;
+use App\Exceptions\MinimumOrderAmountException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\StorePaymentProofRequest;
@@ -26,7 +28,7 @@ class OrderController extends Controller
                 attributes: $request->validated(),
                 user: $request->user(),
             );
-        } catch (InsufficientStockException|InvalidOrderItemException $e) {
+        } catch (InsufficientStockException|InvalidOrderItemException|DeliveryMethodUnavailableException|MinimumOrderAmountException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 

@@ -5,6 +5,7 @@ namespace Tests\Feature\Order;
 use App\Models\DeliveryZone;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\StoreSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +28,7 @@ class CreateOrderTest extends TestCase
             'delivery_method' => 'delivery',
             'delivery_zone_id' => $zone->id,
             'delivery_address' => 'No. 12, Jalan Anggerik, Jasin, Melaka',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertCreated();
@@ -38,6 +39,21 @@ class CreateOrderTest extends TestCase
             'payment_status' => 'unpaid',
             'delivery_address' => 'No. 12, Jalan Anggerik, Jasin, Melaka',
         ]);
+    }
+
+    public function test_a_delivery_date_less_than_three_days_out_is_rejected(): void
+    {
+        $product = Product::factory()->create(['stock' => 5]);
+
+        $response = $this->postJson('/api/orders', [
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+            'guest_name' => 'Jane Doe',
+            'guest_phone' => '0123456789',
+            'delivery_method' => 'pickup',
+            'delivery_date' => now()->addDays(2)->toDateString(),
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('delivery_date');
     }
 
     public function test_a_delivery_order_without_an_address_is_rejected(): void
@@ -51,7 +67,7 @@ class CreateOrderTest extends TestCase
             'guest_phone' => '0123456789',
             'delivery_method' => 'delivery',
             'delivery_zone_id' => $zone->id,
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertUnprocessable()->assertJsonValidationErrors('delivery_address');
@@ -66,7 +82,7 @@ class CreateOrderTest extends TestCase
             'guest_name' => 'Jane Doe',
             'guest_phone' => '0123456789',
             'delivery_method' => 'pickup',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertCreated();
@@ -89,7 +105,7 @@ class CreateOrderTest extends TestCase
             'guest_name' => 'Jane Doe',
             'guest_phone' => '0123456789',
             'delivery_method' => 'pickup',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertCreated();
@@ -112,7 +128,7 @@ class CreateOrderTest extends TestCase
             'guest_name' => 'Jane Doe',
             'guest_phone' => '0123456789',
             'delivery_method' => 'pickup',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertUnprocessable();
@@ -130,12 +146,81 @@ class CreateOrderTest extends TestCase
             'guest_name' => 'Jane Doe',
             'guest_phone' => '0123456789',
             'delivery_method' => 'pickup',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $response->assertUnprocessable();
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 1]);
         $this->assertDatabaseCount('orders', 0);
+    }
+
+    public function test_an_order_below_the_minimum_amount_is_rejected(): void
+    {
+        StoreSetting::current()->update(['min_order_amount' => 50]);
+        $product = Product::factory()->create(['price' => 10, 'stock' => 5]);
+
+        $response = $this->postJson('/api/orders', [
+            'items' => [['product_id' => $product->id, 'quantity' => 2]],
+            'guest_name' => 'Jane Doe',
+            'guest_phone' => '0123456789',
+            'delivery_method' => 'pickup',
+            'delivery_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response->assertUnprocessable()->assertJsonPath('message', 'The minimum order amount is RM50.00.');
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 5]);
+    }
+
+    public function test_an_order_meeting_the_minimum_amount_succeeds(): void
+    {
+        StoreSetting::current()->update(['min_order_amount' => 50]);
+        $product = Product::factory()->create(['price' => 30, 'stock' => 5]);
+
+        $response = $this->postJson('/api/orders', [
+            'items' => [['product_id' => $product->id, 'quantity' => 2]],
+            'guest_name' => 'Jane Doe',
+            'guest_phone' => '0123456789',
+            'delivery_method' => 'pickup',
+            'delivery_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response->assertCreated();
+    }
+
+    public function test_pickup_is_rejected_when_disabled_in_settings(): void
+    {
+        StoreSetting::current()->update(['allow_pickup' => false]);
+        $product = Product::factory()->create(['stock' => 5]);
+
+        $response = $this->postJson('/api/orders', [
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+            'guest_name' => 'Jane Doe',
+            'guest_phone' => '0123456789',
+            'delivery_method' => 'pickup',
+            'delivery_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response->assertUnprocessable()->assertJsonPath('message', 'Pickup is currently unavailable.');
+    }
+
+    public function test_delivery_is_rejected_when_disabled_in_settings(): void
+    {
+        StoreSetting::current()->update(['allow_delivery' => false]);
+        $product = Product::factory()->create(['stock' => 5]);
+        $zone = DeliveryZone::factory()->create();
+
+        $response = $this->postJson('/api/orders', [
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+            'guest_name' => 'Jane Doe',
+            'guest_phone' => '0123456789',
+            'delivery_method' => 'delivery',
+            'delivery_zone_id' => $zone->id,
+            'delivery_address' => 'No. 12, Jalan Anggerik, Jasin, Melaka',
+            'delivery_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response->assertUnprocessable()->assertJsonPath('message', 'Delivery is currently unavailable.');
     }
 
     public function test_a_guest_can_look_up_their_order_by_reference_and_phone(): void
@@ -147,7 +232,7 @@ class CreateOrderTest extends TestCase
             'guest_name' => 'Jane Doe',
             'guest_phone' => '0123456789',
             'delivery_method' => 'pickup',
-            'delivery_date' => now()->addDay()->toDateString(),
+            'delivery_date' => now()->addDays(3)->toDateString(),
         ]);
 
         $reference = $create->json('data.order_reference');

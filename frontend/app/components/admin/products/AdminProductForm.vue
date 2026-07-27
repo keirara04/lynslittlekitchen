@@ -28,6 +28,7 @@ const form = reactive<ProductFormData>({
   price: 0,
   stock: 0,
   status: 'active',
+  is_signature: false,
   images: [],
   variants: [],
 })
@@ -43,6 +44,7 @@ function hydrate(product?: AdminProduct | null) {
     price: product.price,
     stock: product.stock,
     status: product.status,
+    is_signature: product.is_signature,
     images: product.images.map(image => ({ url: image.url })),
     variants: product.variants.map(variant => ({ label: variant.label, price: variant.price, stock: variant.stock })),
   })
@@ -70,6 +72,7 @@ function submit() {
         <label class="admin-field"><span>Product name</span><input v-model.trim="form.name" required placeholder="e.g. Choc Chip Crunch"><small v-if="serverErrors.name" class="admin-field__error">{{ serverErrors.name[0] }}</small></label>
         <label class="admin-field"><span>Category</span><select v-model="form.category_id"><option :value="null">Select category</option><option v-for="category in categories" :key="category.slug" :value="category.id">{{ category.name }}</option></select><small v-if="serverErrors.category_id" class="admin-field__error">{{ serverErrors.category_id[0] }}</small></label>
         <label class="admin-field"><span>Status</span><select v-model="form.status"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+        <label class="admin-field"><span>Signature</span><select v-model="form.is_signature"><option :value="false">Regular product</option><option :value="true">Our signature</option></select></label>
         <label class="admin-field"><span>Description</span><textarea v-model="form.description" rows="5" placeholder="Write product description…" /></label>
         <label class="admin-field"><span>Ingredients</span><input v-model="form.ingredients" placeholder="Flour, butter, chocolate chips…"></label>
         <label class="admin-field"><span>Allergens</span><input v-model="form.allergens" placeholder="Gluten, milk, eggs…"></label>
