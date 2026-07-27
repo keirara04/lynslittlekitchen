@@ -1,23 +1,26 @@
 <script setup lang="ts">
+import LanguageToggle from '~/components/shared/LanguageToggle.vue'
+
 const menuOpen = ref(false)
 const cart = useCartStore()
 const route = useRoute()
+const { t } = useI18n()
 
 watch(() => route.fullPath, () => { menuOpen.value = false })
 
-const links = [
-  { label: 'Home', to: '/' },
-  { label: 'Shop', to: '/shop' },
-  { label: 'About us', to: '/about' },
-  { label: 'How to order', to: '/how-to-order' },
-  { label: 'Contact', to: '/contact' },
-]
+const links = computed(() => [
+  { label: t('nav.home'), to: '/' },
+  { label: t('nav.shop'), to: '/shop' },
+  { label: t('nav.about'), to: '/about' },
+  { label: t('nav.howToOrder'), to: '/how-to-order' },
+  { label: t('nav.contact'), to: '/contact' },
+])
 </script>
 
 <template>
   <header class="site-header">
     <div class="container-shell flex h-[74px] items-center justify-between gap-5">
-      <NuxtLink to="/" class="brand-mark" aria-label="Lyn's Little Kitchen home">
+      <NuxtLink to="/" class="brand-mark" :aria-label="t('header.brandAria')">
         LYN’S
         <span>Little Kitchen</span>
       </NuxtLink>
@@ -29,10 +32,11 @@ const links = [
       </nav>
 
       <div class="flex items-center gap-2">
+        <LanguageToggle class="hidden sm:flex" />
         <NuxtLink to="/track-order" class="hidden min-h-11 items-center px-2 text-xs font-semibold text-stone-600 sm:flex">
-          Track order
+          {{ t('nav.trackOrder') }}
         </NuxtLink>
-        <NuxtLink to="/cart" class="relative grid h-11 w-11 place-items-center rounded-full hover:bg-white" aria-label="Open cart">
+        <NuxtLink to="/cart" class="relative grid h-11 w-11 place-items-center rounded-full hover:bg-white" :aria-label="t('header.cartAria')">
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
             <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20.2 8H6.1"/>
             <circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/>
@@ -41,7 +45,7 @@ const links = [
             {{ cart.totals.itemCount }}
           </span>
         </NuxtLink>
-        <button class="grid h-11 w-11 place-items-center rounded-full hover:bg-white md:hidden" :aria-expanded="menuOpen" aria-controls="mobile-navigation" aria-label="Toggle menu" @click="menuOpen = !menuOpen">
+        <button class="grid h-11 w-11 place-items-center rounded-full hover:bg-white md:hidden" :aria-expanded="menuOpen" aria-controls="mobile-navigation" :aria-label="t('header.menuAria')" @click="menuOpen = !menuOpen">
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <path v-if="!menuOpen" d="M4 7h16M4 12h16M4 17h16"/>
             <path v-else d="m6 6 12 12M18 6 6 18"/>
@@ -55,7 +59,10 @@ const links = [
         <NuxtLink v-for="link in links" :key="link.to" :to="link.to" class="border-b border-[#70453412] py-3 text-sm font-semibold">
           {{ link.label }}
         </NuxtLink>
-        <NuxtLink to="/track-order" class="py-3 text-sm font-semibold text-[#a85f4c]">Track your order</NuxtLink>
+        <NuxtLink to="/track-order" class="py-3 text-sm font-semibold text-[#a85f4c]">{{ t('nav.trackYourOrder') }}</NuxtLink>
+        <div class="flex justify-end py-3 sm:hidden">
+          <LanguageToggle />
+        </div>
       </div>
     </nav>
   </header>

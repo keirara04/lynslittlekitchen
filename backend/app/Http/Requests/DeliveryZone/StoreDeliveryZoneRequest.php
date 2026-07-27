@@ -18,6 +18,7 @@ class StoreDeliveryZoneRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'name_ms' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
         ];
     }

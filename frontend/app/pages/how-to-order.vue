@@ -1,60 +1,28 @@
 <script setup lang="ts">
+const { t, tm } = useI18n()
+
 useSeoMeta({
   title: "How to order | Lyn's Little Kitchen",
   description: 'Five simple steps from choosing your cookies to receiving a freshly baked box around Jasin.',
 })
 
 interface OrderStep {
-  number: string
   title: string
   text: string
-  image: string
-  alt: string
-  side: 'left' | 'right'
 }
 
-const steps: OrderStep[] = [
-  {
-    number: '01',
-    title: 'Choose your cookies',
-    text: 'Browse the menu and pick your favourite pack.',
-    image: '/images/how-to-order/choose-cookies.png',
-    alt: 'An open gift box filled with assorted cookies',
-    side: 'left',
-  },
-  {
-    number: '02',
-    title: 'Add your details',
-    text: 'Tell us where and when you would like your order.',
-    image: '/images/how-to-order/add-details.png',
-    alt: 'A handwritten order note being filled in',
-    side: 'right',
-  },
-  {
-    number: '03',
-    title: 'Confirm your order',
-    text: 'Review the total and create your order securely.',
-    image: '/images/how-to-order/confirm-order.png',
-    alt: 'A Lyn’s Little Kitchen box being sealed by hand',
-    side: 'left',
-  },
-  {
-    number: '04',
-    title: 'We bake',
-    text: 'Your cookies are baked fresh—not pulled from a shelf.',
-    image: '/images/how-to-order/we-bake.png',
-    alt: 'Fresh cookies baking on an oven rack',
-    side: 'right',
-  },
-  {
-    number: '05',
-    title: 'Delivery or pickup',
-    text: 'Receive your box around Jasin or collect it.',
-    image: '/images/how-to-order/delivery-pickup.png',
-    alt: 'A ribboned Lyn’s Little Kitchen box ready for delivery',
-    side: 'left',
-  },
+const stepMeta = [
+  { number: '01', image: '/images/how-to-order/choose-cookies.png', alt: 'An open gift box filled with assorted cookies', side: 'left' as const },
+  { number: '02', image: '/images/how-to-order/add-details.png', alt: 'A handwritten order note being filled in', side: 'right' as const },
+  { number: '03', image: '/images/how-to-order/confirm-order.png', alt: 'A Lyn’s Little Kitchen box being sealed by hand', side: 'left' as const },
+  { number: '04', image: '/images/how-to-order/we-bake.png', alt: 'Fresh cookies baking on an oven rack', side: 'right' as const },
+  { number: '05', image: '/images/how-to-order/delivery-pickup.png', alt: 'A ribboned Lyn’s Little Kitchen box ready for delivery', side: 'left' as const },
 ]
+
+const steps = computed(() => {
+  const translated = tm('howToOrder.steps') as unknown as OrderStep[]
+  return stepMeta.map((meta, index) => ({ ...meta, ...translated[index] }))
+})
 </script>
 
 <template>
@@ -62,13 +30,13 @@ const steps: OrderStep[] = [
     <section class="order-hero">
       <div class="hero-copy">
         <p class="hero-kicker">
-          From craving to cookie
+          {{ t('howToOrder.kicker') }}
           <svg viewBox="0 0 44 24" aria-hidden="true">
             <path d="M3 19C13 15 23 10 40 3M12 15C10 9 12 6 17 4c1 5-1 8-5 11Zm9-5c0-5 3-8 8-9 0 5-3 8-8 9Zm8-3c4 0 8 2 10 6-5 1-8-1-10-6ZM7 18c-3-1-5-4-5-8 5 1 7 4 5 8Z" />
           </svg>
         </p>
 
-        <h1>A little journey to<br>your perfect box</h1>
+        <h1>{{ t('howToOrder.heroTitleLine1') }}<br>{{ t('howToOrder.heroTitleLine2') }}</h1>
 
         <div class="heart-rule" aria-hidden="true">
           <span />
@@ -76,8 +44,8 @@ const steps: OrderStep[] = [
           <span />
         </div>
 
-        <p class="hero-intro">Five simple steps, baked with care in our little Jasin kitchen.</p>
-        <NuxtLink to="/shop" class="order-button">Start your order</NuxtLink>
+        <p class="hero-intro">{{ t('howToOrder.heroIntro') }}</p>
+        <NuxtLink to="/shop" class="order-button">{{ t('howToOrder.startYourOrder') }}</NuxtLink>
 
         <svg class="hero-leaves" viewBox="0 0 120 160" aria-hidden="true">
           <path d="M8 154C39 116 45 69 57 12M32 115C16 107 11 94 13 79c16 7 22 20 19 36Zm14-37C32 67 31 52 39 38c13 10 15 23 7 40Zm8-20c16-2 28-10 36-25-17-2-29 6-36 25Zm-20 65c18 1 34-4 47-17-17-5-34 1-47 17Z" />
@@ -126,8 +94,8 @@ const steps: OrderStep[] = [
         </svg>
       </div>
 
-      <p>Freshly baked in Jasin,<br>delivered from RM3.00</p>
-      <NuxtLink to="/shop" class="order-button">Choose your cookies</NuxtLink>
+      <p>{{ t('howToOrder.bannerLine1') }}<br>{{ t('howToOrder.bannerLine2') }}</p>
+      <NuxtLink to="/shop" class="order-button">{{ t('howToOrder.chooseYourCookies') }}</NuxtLink>
 
       <svg class="banner-sprig" viewBox="0 0 100 70" aria-hidden="true">
         <path d="M7 60C31 49 53 31 84 8M30 48C20 41 18 32 21 23c10 5 14 14 9 25Zm20-13c-3-11 2-20 12-27 5 11 1 20-12 27Zm14-10c11 0 20 5 26 14-12 3-21-2-26-14Z" />

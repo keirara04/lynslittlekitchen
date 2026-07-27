@@ -7,7 +7,7 @@ definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 const { data: response, pending, error, refresh } = await useAdminDeliveryZones()
 
 const editing = ref<AdminDeliveryZone | null>(null)
-const form = reactive({ name: '', price: '' as number | string })
+const form = reactive({ name: '', name_ms: '', price: '' as number | string })
 const serverErrors = ref<Record<string, string[]>>({})
 const formError = ref('')
 const busy = ref(false)
@@ -18,6 +18,7 @@ const actionError = ref('')
 function startCreate() {
   editing.value = null
   form.name = ''
+  form.name_ms = ''
   form.price = ''
   serverErrors.value = {}
   formError.value = ''
@@ -26,6 +27,7 @@ function startCreate() {
 function startEdit(zone: AdminDeliveryZone) {
   editing.value = zone
   form.name = zone.name
+  form.name_ms = zone.name_ms || ''
   form.price = zone.price
   serverErrors.value = {}
   formError.value = ''
@@ -35,7 +37,7 @@ async function save() {
   busy.value = true
   serverErrors.value = {}
   formError.value = ''
-  const payload = { name: form.name.trim(), price: Number(form.price) }
+  const payload = { name: form.name.trim(), name_ms: form.name_ms.trim() || null, price: Number(form.price) }
 
   try {
     if (editing.value) {
@@ -92,6 +94,10 @@ useSeoMeta({ title: "Delivery zones | Lyn's Admin", robots: 'noindex, nofollow' 
           <span>Zone name</span>
           <input v-model.trim="form.name" required placeholder="e.g. Jasin">
           <small v-if="serverErrors.name" class="admin-field__error">{{ serverErrors.name[0] }}</small>
+        </label>
+        <label class="admin-field">
+          <span>Zone name (Malay)</span>
+          <input v-model.trim="form.name_ms" placeholder="Optional — falls back to English if left blank">
         </label>
         <label class="admin-field">
           <span>Delivery fee (RM)</span>

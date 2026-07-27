@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'store_name', 'business_registration_no', 'business_type', 'established_since',
-    'address_line1', 'address_line2', 'postcode', 'city', 'state',
-    'contact_phone', 'contact_email', 'operating_hours',
+    'address_line1', 'address_line1_ms', 'address_line2', 'address_line2_ms', 'postcode',
+    'city', 'city_ms', 'state', 'state_ms',
+    'contact_phone', 'contact_email', 'operating_hours', 'operating_hours_ms',
     'min_order_amount', 'lead_time_days', 'order_cutoff_time', 'allow_pickup', 'allow_delivery',
     'bank_name', 'bank_account_name', 'bank_account_number', 'duitnow_id',
     'alert_email', 'new_order_email_enabled', 'low_stock_threshold',

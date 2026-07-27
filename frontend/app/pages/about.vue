@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { t, tm } = useI18n()
+
 useSeoMeta({
   title: "About us | Lyn's Little Kitchen",
   description: "Meet the home kitchen behind Lyn's small-batch cookies in Jasin, Melaka.",
@@ -9,32 +11,19 @@ interface BakeryPromise {
   text: string
 }
 
-const promises: BakeryPromise[] = [
-  {
-    title: 'Generous flavours',
-    text: 'Cookies made for the kind of sharing that calls for one more piece.',
-  },
-  {
-    title: 'Baked close to delivery',
-    text: 'Each order is prepared with care so it arrives fragrant, comforting, and ready to enjoy.',
-  },
-  {
-    title: 'Packed for sharing',
-    text: 'Every box is packed neatly for a treat at home, a small gift, or the table.',
-  },
-]
+const promises = computed(() => tm('about.promises') as unknown as BakeryPromise[])
 </script>
 
 <template>
   <main class="about-page">
     <section class="about-hero" aria-labelledby="about-heading">
       <div class="about-hero__copy">
-        <p class="about-kicker">Lyn’s little notes</p>
-        <h1 id="about-heading">The good things take a little longer.</h1>
+        <p class="about-kicker">{{ t('about.kicker') }}</p>
+        <h1 id="about-heading">{{ t('about.heroTitle') }}</h1>
         <p class="about-hero__intro">
-          Small batches, baked close to delivery and packed for the people you’re thinking of.
+          {{ t('about.heroIntro') }}
         </p>
-        <NuxtLink to="/shop" class="btn-primary about-hero__action">See what’s baking</NuxtLink>
+        <NuxtLink to="/shop" class="btn-primary about-hero__action">{{ t('about.seeWhatsBaking') }}</NuxtLink>
       </div>
 
       <figure class="about-hero__image">
@@ -44,7 +33,7 @@ const promises: BakeryPromise[] = [
           width="1440"
           height="960"
         >
-        <figcaption>Small batches · Jasin, Melaka</figcaption>
+        <figcaption>{{ t('about.heroCaption') }}</figcaption>
       </figure>
     </section>
 
@@ -60,23 +49,21 @@ const promises: BakeryPromise[] = [
         >
       </div>
       <div class="about-origin__copy">
-        <p class="about-kicker">A little kitchen in Jasin</p>
-        <h2 id="origin-heading">From Lyn’s little kitchen</h2>
+        <p class="about-kicker">{{ t('about.originKicker') }}</p>
+        <h2 id="origin-heading">{{ t('about.originTitle') }}</h2>
         <p>
-          Lyn’s Little Kitchen began with a simple love for a warm cookie and the people waiting to share it.
-          What started at home is still made that way: in small batches, with familiar ingredients and time for the details.
+          {{ t('about.originPara1') }}
         </p>
         <p>
-          We bake close to delivery because the best part is never just the cookie. It’s opening the box, catching that
-          first buttery scent, and passing one along.
+          {{ t('about.originPara2') }}
         </p>
       </div>
     </section>
 
     <section class="about-promises container-shell" aria-labelledby="promises-heading">
       <div class="about-promises__heading">
-        <p class="about-kicker">The way we make them</p>
-        <h2 id="promises-heading">A few things we never rush.</h2>
+        <p class="about-kicker">{{ t('about.promisesKicker') }}</p>
+        <h2 id="promises-heading">{{ t('about.promisesTitle') }}</h2>
       </div>
       <ol class="about-promises__list">
         <li v-for="(promise, index) in promises" :key="promise.title" class="about-promises__item">
@@ -91,15 +78,14 @@ const promises: BakeryPromise[] = [
 
     <section class="about-closing container-shell" aria-labelledby="closing-heading">
       <div class="about-closing__copy">
-        <p class="about-kicker">Made to be passed around</p>
-        <h2 id="closing-heading">There’s always room for one more.</h2>
+        <p class="about-kicker">{{ t('about.closingKicker') }}</p>
+        <h2 id="closing-heading">{{ t('about.closingTitle') }}</h2>
         <p>
-          Whether you are ordering for a quiet afternoon, a thoughtful gift, or a table full of people, we’ll make your
-          box with care from the first tray to the last fold.
+          {{ t('about.closingText') }}
         </p>
         <div class="about-closing__actions">
-          <NuxtLink to="/shop" class="btn-primary">See what’s baking</NuxtLink>
-          <NuxtLink to="/how-to-order" class="btn-ghost">How to order <span aria-hidden="true">→</span></NuxtLink>
+          <NuxtLink to="/shop" class="btn-primary">{{ t('about.seeWhatsBaking') }}</NuxtLink>
+          <NuxtLink to="/how-to-order" class="btn-ghost">{{ t('nav.howToOrder') }} <span aria-hidden="true">→</span></NuxtLink>
         </div>
       </div>
       <img
@@ -115,13 +101,13 @@ const promises: BakeryPromise[] = [
     <section class="about-note container-shell" aria-labelledby="note-heading">
       <div class="about-note__rule" aria-hidden="true" />
       <div>
-        <p class="about-kicker">A note from the kitchen</p>
-        <h2 id="note-heading">Made slowly. Meant to be shared.</h2>
+        <p class="about-kicker">{{ t('about.noteKicker') }}</p>
+        <h2 id="note-heading">{{ t('about.noteTitle') }}</h2>
       </div>
       <p>
-        Our next bake is always worth looking forward to. Follow along, or drop us a message when you have a box in mind.
+        {{ t('about.noteText') }}
       </p>
-      <NuxtLink to="/contact" class="btn-ghost about-note__link">Get in touch <span aria-hidden="true">→</span></NuxtLink>
+      <NuxtLink to="/contact" class="btn-ghost about-note__link">{{ t('about.getInTouch') }} <span aria-hidden="true">→</span></NuxtLink>
     </section>
   </main>
 </template>

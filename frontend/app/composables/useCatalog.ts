@@ -15,12 +15,11 @@ function decorateProduct(product: Product): Product {
 }
 
 export function useCatalog() {
-  const config = useRuntimeConfig()
+  const { locale } = useI18n()
 
   const result = useAsyncData<Product[]>('storefront-products', async () => {
     try {
-      const response = await $fetch<PaginatedProducts>('/products', {
-        baseURL: config.public.apiBase,
+      const response = await useApiFetch<PaginatedProducts>('/products', {
         query: { per_page: 50 },
       })
       return response.data.map(decorateProduct)
@@ -28,7 +27,7 @@ export function useCatalog() {
     catch {
       return fallbackProducts.map(decorateProduct)
     }
-  }, { default: () => fallbackProducts.map(decorateProduct) })
+  }, { default: () => fallbackProducts.map(decorateProduct), watch: [locale] })
 
   return {
     ...result,

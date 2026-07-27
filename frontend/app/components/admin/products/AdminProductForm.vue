@@ -22,9 +22,13 @@ const ready = ref(false)
 const form = reactive<ProductFormData>({
   category_id: null,
   name: '',
+  name_ms: '',
   description: '',
+  description_ms: '',
   ingredients: '',
+  ingredients_ms: '',
   allergens: '',
+  allergens_ms: '',
   price: 0,
   stock: 0,
   status: 'active',
@@ -38,9 +42,13 @@ function hydrate(product?: AdminProduct | null) {
   Object.assign(form, {
     category_id: product.category?.id ?? null,
     name: product.name,
+    name_ms: product.name_ms || '',
     description: product.description || '',
+    description_ms: product.description_ms || '',
     ingredients: product.ingredients || '',
+    ingredients_ms: product.ingredients_ms || '',
     allergens: product.allergens || '',
+    allergens_ms: product.allergens_ms || '',
     price: product.price,
     stock: product.stock,
     status: product.status,
@@ -70,12 +78,16 @@ function submit() {
     <section v-show="activeSection === 'basic'" class="admin-editor-section admin-editor-basic">
       <div class="admin-editor-column">
         <label class="admin-field"><span>Product name</span><input v-model.trim="form.name" required placeholder="e.g. Choc Chip Crunch"><small v-if="serverErrors.name" class="admin-field__error">{{ serverErrors.name[0] }}</small></label>
+        <label class="admin-field"><span>Product name (Malay)</span><input v-model.trim="form.name_ms" placeholder="Optional — falls back to English if left blank"></label>
         <label class="admin-field"><span>Category</span><select v-model="form.category_id"><option :value="null">Select category</option><option v-for="category in categories" :key="category.slug" :value="category.id">{{ category.name }}</option></select><small v-if="serverErrors.category_id" class="admin-field__error">{{ serverErrors.category_id[0] }}</small></label>
         <label class="admin-field"><span>Status</span><select v-model="form.status"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
         <label class="admin-field"><span>Signature</span><select v-model="form.is_signature"><option :value="false">Regular product</option><option :value="true">Our signature</option></select></label>
         <label class="admin-field"><span>Description</span><textarea v-model="form.description" rows="5" placeholder="Write product description…" /></label>
+        <label class="admin-field"><span>Description (Malay)</span><textarea v-model="form.description_ms" rows="5" placeholder="Optional — falls back to English if left blank" /></label>
         <label class="admin-field"><span>Ingredients</span><input v-model="form.ingredients" placeholder="Flour, butter, chocolate chips…"></label>
+        <label class="admin-field"><span>Ingredients (Malay)</span><input v-model="form.ingredients_ms" placeholder="Optional"></label>
         <label class="admin-field"><span>Allergens</span><input v-model="form.allergens" placeholder="Gluten, milk, eggs…"></label>
+        <label class="admin-field"><span>Allergens (Malay)</span><input v-model="form.allergens_ms" placeholder="Optional"></label>
       </div>
       <aside class="admin-editor-column admin-editor-pricing">
         <label class="admin-field"><span>Base price (RM)</span><input v-model.number="form.price" type="number" min="0" step="0.01" required><small v-if="serverErrors.price" class="admin-field__error">{{ serverErrors.price[0] }}</small></label>

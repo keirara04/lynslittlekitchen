@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\HasLocalizedFields;
 use App\Models\DeliveryZone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -9,6 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin DeliveryZone */
 class DeliveryZoneResource extends JsonResource
 {
+    use HasLocalizedFields;
+
     /**
      * @return array<string, mixed>
      */
@@ -16,7 +19,8 @@ class DeliveryZoneResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->localized($request, 'name'),
+            'name_ms' => $this->name_ms,
             'price' => (float) $this->price,
         ];
     }

@@ -70,9 +70,13 @@ export function toProductPayload(form) {
   return {
     category_id: form.category_id === '' || form.category_id === null ? null : Number(form.category_id),
     name: String(form.name || '').trim(),
+    name_ms: nullableText(form.name_ms),
     description: nullableText(form.description),
+    description_ms: nullableText(form.description_ms),
     ingredients: nullableText(form.ingredients),
+    ingredients_ms: nullableText(form.ingredients_ms),
     allergens: nullableText(form.allergens),
+    allergens_ms: nullableText(form.allergens_ms),
     price: Number(form.price || 0),
     stock: Number(form.stock || 0),
     status: form.status,

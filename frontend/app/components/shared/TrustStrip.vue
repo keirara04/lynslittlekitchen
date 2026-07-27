@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const items = [
-  { icon: '♨', title: 'Freshly baked', text: 'Made to order' },
-  { icon: '✓', title: 'Quality ingredients', text: 'Prepared with care' },
-  { icon: '▣', title: 'Secure payment', text: 'Billplz ready' },
-  { icon: '⌂', title: 'Delivery in Jasin', text: 'Fast & reliable' },
-]
+const { t } = useI18n()
+const items = computed(() => [
+  { icon: '♨', title: t('trustStrip.freshlyBaked.title'), text: t('trustStrip.freshlyBaked.text') },
+  { icon: '✓', title: t('trustStrip.qualityIngredients.title'), text: t('trustStrip.qualityIngredients.text') },
+  { icon: '▣', title: t('trustStrip.securePayment.title'), text: t('trustStrip.securePayment.text') },
+  { icon: '⌂', title: t('trustStrip.delivery.title'), text: t('trustStrip.delivery.text') },
+])
 </script>
 
 <template>

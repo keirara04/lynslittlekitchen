@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\HasLocalizedFields;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -9,6 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin Category */
 class CategoryResource extends JsonResource
 {
+    use HasLocalizedFields;
+
     /**
      * @return array<string, mixed>
      */
@@ -16,7 +19,7 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->localized($request, 'name'),
             'slug' => $this->slug,
         ];
     }

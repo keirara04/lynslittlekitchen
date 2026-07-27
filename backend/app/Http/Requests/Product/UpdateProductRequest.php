@@ -21,9 +21,13 @@ class UpdateProductRequest extends FormRequest
         return [
             'category_id' => ['sometimes', 'nullable', 'integer', 'exists:categories,id'],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'name_ms' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
+            'description_ms' => ['sometimes', 'nullable', 'string'],
             'ingredients' => ['sometimes', 'nullable', 'string'],
+            'ingredients_ms' => ['sometimes', 'nullable', 'string'],
             'allergens' => ['sometimes', 'nullable', 'string'],
+            'allergens_ms' => ['sometimes', 'nullable', 'string'],
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
             'status' => ['sometimes', 'required', Rule::enum(ProductStatus::class)],

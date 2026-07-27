@@ -21,9 +21,13 @@ class StoreProductRequest extends FormRequest
         return [
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
+            'name_ms' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'description_ms' => ['nullable', 'string'],
             'ingredients' => ['nullable', 'string'],
+            'ingredients_ms' => ['nullable', 'string'],
             'allergens' => ['nullable', 'string'],
+            'allergens_ms' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', Rule::enum(ProductStatus::class)],

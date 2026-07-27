@@ -51,14 +51,19 @@ export interface AdminSettings {
   business_type: string | null
   established_since: string | null
   address_line1: string | null
+  address_line1_ms: string | null
   address_line2: string | null
+  address_line2_ms: string | null
   postcode: string | null
   city: string | null
+  city_ms: string | null
   state: string | null
+  state_ms: string | null
 
   contact_phone: string | null
   contact_email: string | null
   operating_hours: string | null
+  operating_hours_ms: string | null
 
   min_order_amount: number | null
   lead_time_days: number | null
@@ -82,6 +87,7 @@ export interface AdminSettings {
 export interface AdminDeliveryZone {
   id: number
   name: string
+  name_ms?: string | null
   price: number
 }
 
@@ -167,9 +173,13 @@ export interface PaginatedResponse<T> {
 export interface ProductFormData {
   category_id: number | null
   name: string
+  name_ms: string
   description: string
+  description_ms: string
   ingredients: string
+  ingredients_ms: string
   allergens: string
+  allergens_ms: string
   price: number | string
   stock: number | string
   status: ProductStatus
@@ -181,9 +191,13 @@ export interface ProductFormData {
 export interface StoreProductPayload {
   category_id: number | null
   name: string
+  name_ms: string | null
   description: string | null
+  description_ms: string | null
   ingredients: string | null
+  ingredients_ms: string | null
   allergens: string | null
+  allergens_ms: string | null
   price: number
   stock: number
   status: ProductStatus

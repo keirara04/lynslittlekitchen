@@ -4,6 +4,7 @@ import { formatRinggit, resolveProductImage, totalStock } from '~/utils/storefro
 
 const props = defineProps<{ product: Product, compact?: boolean }>()
 const cart = useCartStore()
+const { t } = useI18n()
 const added = ref(false)
 const stock = computed(() => totalStock(props.product))
 
@@ -20,7 +21,7 @@ function quickAdd() {
       <div class="product-image-frame">
         <img :src="resolveProductImage(product.slug, product.images)" :alt="product.name" width="640" height="640">
         <span v-if="product.is_signature" class="absolute left-3 top-3 rounded-full bg-[#fffaf5]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#854536]">
-          Our signature
+          {{ t('product.signature') }}
         </span>
       </div>
     </NuxtLink>
@@ -30,13 +31,13 @@ function quickAdd() {
         {{ product.name }}
       </NuxtLink>
       <p class="mt-1 text-xs font-semibold" :class="stock > 0 ? 'text-stone-500' : 'text-red-600'">
-        {{ stock > 0 ? `${stock} in stock` : 'Out of stock' }}
+        {{ stock > 0 ? t('product.inStock', { count: stock }) : t('product.outOfStock') }}
       </p>
       <div class="mt-3 flex items-center justify-between gap-3">
-        <strong class="text-sm">{{ product.variants?.length ? 'From ' : '' }}{{ formatRinggit(product.price) }}</strong>
+        <strong class="text-sm">{{ product.variants?.length ? `${t('product.from')} ` : '' }}{{ formatRinggit(product.price) }}</strong>
         <button
           class="grid h-10 w-10 place-items-center rounded-full border border-[#a85f4c55] text-[#854536] transition hover:bg-[#a85f4c] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#854536]"
-          :aria-label="`Add ${product.name} to cart`"
+          :aria-label="t('product.addToCartAria', { name: product.name })"
           :disabled="stock === 0"
           @click="quickAdd"
         >

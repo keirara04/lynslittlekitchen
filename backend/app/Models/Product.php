@@ -12,8 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'category_id', 'name', 'slug', 'description', 'ingredients',
-    'allergens', 'price', 'stock', 'status', 'is_signature',
+    'category_id', 'name', 'name_ms', 'slug', 'description', 'description_ms',
+    'ingredients', 'ingredients_ms', 'allergens', 'allergens_ms',
+    'price', 'stock', 'status', 'is_signature',
 ])]
 class Product extends Model
 {

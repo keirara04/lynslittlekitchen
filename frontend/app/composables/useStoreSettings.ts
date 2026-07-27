@@ -23,10 +23,11 @@ export interface StoreSettings {
 }
 
 export function useStoreSettings() {
-  const config = useRuntimeConfig()
+  const { locale } = useI18n()
 
   return useAsyncData<StoreSettings>('store-settings', () =>
-    $fetch<StoreSettings>('/store-settings', { baseURL: config.public.apiBase }), {
+    useApiFetch<StoreSettings>('/store-settings'), {
     getCachedData: () => undefined,
+    watch: [locale],
   })
 }

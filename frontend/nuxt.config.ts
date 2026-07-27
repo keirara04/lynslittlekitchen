@@ -11,7 +11,19 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@nuxtjs/i18n',
   ],
+
+  i18n: {
+    locales: [
+      { code: 'en', language: 'en-MY', name: 'English', file: 'en.json' },
+      { code: 'ms', language: 'ms-MY', name: 'Bahasa Melayu', file: 'ms.json' },
+    ],
+    defaultLocale: 'en',
+    langDir: 'locales/',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: false,
+  },
 
   runtimeConfig: {
     apiBase: process.env.NUXT_API_BASE || 'http://127.0.0.1:8000/api',
@@ -24,7 +36,6 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'en-MY' },
       meta: [
         { name: 'theme-color', content: '#fbf5ee' },
         { name: 'description', content: "Small-batch cookies, baked with love in Jasin, Melaka." },

@@ -1,6 +1,7 @@
 export interface Category {
   id?: number
   name: string
+  name_ms?: string | null
   slug: string
 }
 
@@ -21,10 +22,14 @@ export interface ProductVariant {
 export interface Product {
   id: number
   name: string
+  name_ms?: string | null
   slug: string
   description: string
+  description_ms?: string | null
   ingredients: string
+  ingredients_ms?: string | null
   allergens: string
+  allergens_ms?: string | null
   price: number
   stock: number
   in_stock: boolean

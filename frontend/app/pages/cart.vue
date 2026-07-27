@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { formatRinggit } from '~/utils/storefront.mjs'
 
+const { t } = useI18n()
+
 useSeoMeta({ title: "Your cart | Lyn's Little Kitchen" })
 const cart = useCartStore()
 
@@ -12,8 +14,8 @@ function goToCheckout() {
 <template>
   <div class="container-shell py-10 sm:py-14">
     <header>
-      <span class="eyebrow">Your selection</span>
-      <h1 class="display-title mt-4 text-5xl">Your cart <span class="font-sans text-base tracking-normal text-stone-500">({{ cart.totals.itemCount }} items)</span></h1>
+      <span class="eyebrow">{{ t('cart.yourSelection') }}</span>
+      <h1 class="display-title mt-4 text-5xl">{{ t('cart.yourCart') }} <span class="font-sans text-base tracking-normal text-stone-500">({{ t('cart.itemsCount', { count: cart.totals.itemCount }) }})</span></h1>
     </header>
 
     <div v-if="cart.lines.length" class="mt-9 grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -33,23 +35,23 @@ function goToCheckout() {
           <div class="col-span-2 flex items-center justify-between sm:col-span-1 sm:grid sm:justify-items-end sm:gap-3">
             <div class="hidden sm:block"><CartQuantityStepper :model-value="line.quantity" :min="0" @update:model-value="cart.updateQuantity(line.key, $event)" /></div>
             <strong>{{ formatRinggit(line.unitPrice * line.quantity) }}</strong>
-            <button class="min-h-11 text-xs font-bold text-[#a85f4c] underline-offset-4 hover:underline" @click="cart.removeLine(line.key)">Remove</button>
+            <button class="min-h-11 text-xs font-bold text-[#a85f4c] underline-offset-4 hover:underline" @click="cart.removeLine(line.key)">{{ t('cart.remove') }}</button>
           </div>
         </article>
         <div class="p-5">
-          <label class="form-label">Add a note for the kitchen
-            <textarea class="form-textarea" :value="cart.note" placeholder="Example: Please deliver after 4pm" @input="cart.setNote(($event.target as HTMLTextAreaElement).value)" />
+          <label class="form-label">{{ t('cart.addNote') }}
+            <textarea class="form-textarea" :value="cart.note" :placeholder="t('cart.notePlaceholder')" @input="cart.setNote(($event.target as HTMLTextAreaElement).value)" />
           </label>
         </div>
       </section>
-      <CartOrderSummary action-label="Proceed to checkout" @action="goToCheckout" />
+      <CartOrderSummary :action-label="t('cart.proceedToCheckout')" @action="goToCheckout" />
     </div>
 
     <div v-else class="paper-card mt-9 px-6 py-20 text-center">
       <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#f1ddd1] text-3xl">🍪</div>
-      <h2 class="mt-5 font-serif text-3xl">Your cookie box is empty</h2>
-      <p class="mt-2 text-sm text-stone-500">Pick a favourite and we’ll start the batch.</p>
-      <NuxtLink to="/shop" class="btn-primary mt-6">Browse cookies</NuxtLink>
+      <h2 class="mt-5 font-serif text-3xl">{{ t('cart.emptyTitle') }}</h2>
+      <p class="mt-2 text-sm text-stone-500">{{ t('cart.emptyText') }}</p>
+      <NuxtLink to="/shop" class="btn-primary mt-6">{{ t('cart.browseCookies') }}</NuxtLink>
     </div>
 
     <div class="mt-8"><SharedTrustStrip /></div>
