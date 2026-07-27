@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Admin session required.' })
   }
 
-  const target = path === 'categories' ? '/categories' : `/admin/${path}`
+  const target = `/admin/${path}`
   const hasBody = ['POST', 'PUT', 'PATCH'].includes(method)
 
   return requestLaravel(event, target, {
