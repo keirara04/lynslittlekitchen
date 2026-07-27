@@ -29,6 +29,12 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#fbf5ee' },
         { name: 'description', content: "Small-batch cookies, baked with love in Jasin, Melaka." },
       ],
+      link: [
+        { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icon-192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/icon-512.png' },
+      ],
     },
   },
 
