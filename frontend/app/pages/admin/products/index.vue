@@ -62,7 +62,7 @@ useSeoMeta({ title: "Products | Lyn's Admin", robots: 'noindex, nofollow' })
   <div class="admin-page">
     <header class="admin-page-heading">
       <div><p class="admin-kicker">Catalogue</p><h1>Products</h1><p>Manage cookies, pricing, variants, and inventory.</p></div>
-      <div class="admin-row-actions">
+      <div class="admin-header-actions">
         <button class="admin-button admin-button--secondary" type="button" @click="showCategoryManager = !showCategoryManager">{{ showCategoryManager ? 'Hide categories' : 'Manage categories' }}</button>
         <NuxtLink to="/admin/products/new" class="admin-button admin-button--primary">＋ New Product</NuxtLink>
       </div>
