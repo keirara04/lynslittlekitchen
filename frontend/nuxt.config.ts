@@ -12,7 +12,16 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@nuxtjs/i18n',
+    '@nuxtjs/sitemap',
   ],
+
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://lynslittlekitchen.vercel.app',
+  },
+
+  sitemap: {
+    exclude: ['/admin/**'],
+  },
 
   i18n: {
     locales: [
@@ -31,6 +40,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000/api',
       cloudinaryCloudName: process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
       cloudinaryUploadPreset: process.env.NUXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://lynslittlekitchen.vercel.app',
     },
   },
 
@@ -39,6 +49,9 @@ export default defineNuxtConfig({
       meta: [
         { name: 'theme-color', content: '#fbf5ee' },
         { name: 'description', content: "Small-batch cookies, baked with love in Jasin, Melaka." },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:image', content: `${process.env.NUXT_PUBLIC_SITE_URL || 'https://lynslittlekitchen.vercel.app'}/images/og-default.png` },
+        { name: 'twitter:card', content: 'summary_large_image' },
       ],
       link: [
         { rel: 'icon', href: '/favicon.ico', sizes: 'any' },

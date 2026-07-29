@@ -33,6 +33,35 @@ useSeoMeta({
   ogImage: () => heroImageSrc.value,
 })
 
+const config = useRuntimeConfig()
+
+useHead({
+  script: () => {
+    if (!storeSettings.value) return []
+    const settings = storeSettings.value
+    return [{
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Bakery',
+        name: settings.store_name || "Lyn's Little Kitchen",
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: [settings.address_line1, settings.address_line2].filter(Boolean).join(', '),
+          addressLocality: settings.city,
+          addressRegion: settings.state,
+          postalCode: settings.postcode,
+          addressCountry: 'MY',
+        },
+        telephone: settings.contact_phone,
+        openingHours: settings.operating_hours,
+        url: config.public.siteUrl,
+        image: `${config.public.siteUrl}/images/og-default.png`,
+      }),
+    }]
+  },
+})
+
 interface ProcessStep {
   title: string
   text: string

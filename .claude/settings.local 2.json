@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/user/.claude/plans)",
+      "Read(//Users/user/.claude/plans/**)",
+      "Bash(xargs grep -l 'useFetch\\\\|$fetch\\\\|apiBase')",
+      "Bash(php artisan *)"
+    ]
+  }
+}
