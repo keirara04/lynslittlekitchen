@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\UpdateSettingRequest;
 use App\Models\StoreSetting;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class SettingController extends Controller
 {
@@ -18,6 +19,8 @@ class SettingController extends Controller
     {
         $settings = StoreSetting::current();
         $settings->update($request->validated());
+
+        Cache::forget('store-settings.index');
 
         return response()->json(['data' => $settings]);
     }

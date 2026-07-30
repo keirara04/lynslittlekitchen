@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import AdminBusinessProfileForm from '~/components/admin/settings/AdminBusinessProfileForm.vue'
 import AdminStoreContactForm from '~/components/admin/settings/AdminStoreContactForm.vue'
 import AdminOrderSettingsForm from '~/components/admin/settings/AdminOrderSettingsForm.vue'
@@ -36,8 +37,9 @@ async function save(payload: Partial<AdminSettings>) {
     const updated = await useAdminApi<{ data: AdminSettings }>('settings', { method: 'PUT', body: payload })
     if (response.value) response.value.data = updated.data
   }
-  catch (requestError: any) {
-    const data = requestError?.data?.data ?? requestError?.data
+  catch (err) {
+    const requestError = err as FetchError<{ data?: { errors?: Record<string, string[]>, message?: string }, errors?: Record<string, string[]>, message?: string }>
+    const data = requestError.data?.data ?? requestError.data
     serverErrors.value = data?.errors ?? {}
     formError.value = data?.message ?? 'Settings could not be saved.'
   }

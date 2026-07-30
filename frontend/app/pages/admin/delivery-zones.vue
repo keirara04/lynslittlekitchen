@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import { formatAdminCurrency } from '~/utils/admin.mjs'
 import type { AdminDeliveryZone } from '~/types/admin'
 
@@ -49,8 +50,9 @@ async function save() {
     startCreate()
     await refresh()
   }
-  catch (err: any) {
-    const data = err?.data?.data ?? err?.data
+  catch (err) {
+    const fetchError = err as FetchError<{ data?: { errors?: Record<string, string[]>, message?: string }, errors?: Record<string, string[]>, message?: string }>
+    const data = fetchError.data?.data ?? fetchError.data
     serverErrors.value = data?.errors ?? {}
     formError.value = data?.message ?? 'Delivery zone could not be saved.'
   }
@@ -69,8 +71,9 @@ async function confirmDelete() {
     deleteTarget.value = null
     await refresh()
   }
-  catch (err: any) {
-    actionError.value = err?.data?.message ?? 'Delivery zone could not be deleted.'
+  catch (err) {
+    const fetchError = err as FetchError<{ message?: string }>
+    actionError.value = fetchError.data?.message ?? 'Delivery zone could not be deleted.'
   }
   finally {
     deleting.value = false

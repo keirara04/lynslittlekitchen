@@ -9,13 +9,18 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return CategoryResource::collection(Category::orderBy('name')->get());
+        $rows = Cache::remember('categories.admin.index', now()->addHours(6), function () {
+            return Category::orderBy('name')->get()->toArray();
+        });
+
+        return CategoryResource::collection(Category::hydrate($rows));
     }
 
     public function store(StoreCategoryRequest $request): CategoryResource
@@ -24,6 +29,8 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? $data['name']);
 
         $category = Category::create($data);
+
+        $this->flushCategoryCache();
 
         return new CategoryResource($category);
     }
@@ -40,6 +47,8 @@ class CategoryController extends Controller
 
         $category->update($data);
 
+        $this->flushCategoryCache();
+
         return new CategoryResource($category);
     }
 
@@ -53,7 +62,15 @@ class CategoryController extends Controller
 
         $category->delete();
 
+        $this->flushCategoryCache();
+
         return response()->json(['message' => 'Category deleted.']);
+    }
+
+    private function flushCategoryCache(): void
+    {
+        Cache::forget('categories.public.index');
+        Cache::forget('categories.admin.index');
     }
 
     private function uniqueSlug(string $value, ?int $ignoreId = null): string

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import AdminOrderItems from '~/components/admin/orders/AdminOrderItems.vue'
 import AdminOrderStatusForm from '~/components/admin/orders/AdminOrderStatusForm.vue'
 import AdminOrderTimeline from '~/components/admin/orders/AdminOrderTimeline.vue'
@@ -26,8 +27,9 @@ async function verifyPayment() {
     response.value = updated
     await refreshNuxtData('admin-dashboard')
   }
-  catch (requestError: any) {
-    verifyPaymentError.value = requestError?.data?.data?.message ?? requestError?.data?.message ?? 'Could not verify payment.'
+  catch (err) {
+    const requestError = err as FetchError<{ data?: { message?: string }, message?: string }>
+    verifyPaymentError.value = requestError.data?.data?.message ?? requestError.data?.message ?? 'Could not verify payment.'
   }
   finally { verifyingPayment.value = false }
 }
@@ -45,8 +47,9 @@ async function updateStatus(status: OrderStatus) {
     pendingTerminal.value = null
     await refreshNuxtData('admin-dashboard')
   }
-  catch (requestError: any) {
-    const data = requestError?.data?.data ?? requestError?.data
+  catch (err) {
+    const requestError = err as FetchError<{ data?: { errors?: Record<string, string[]>, message?: string }, errors?: Record<string, string[]>, message?: string }>
+    const data = requestError.data?.data ?? requestError.data
     updateError.value = data?.errors?.order_status?.[0] ?? data?.message ?? 'Order status could not be updated.'
   }
   finally { busy.value = false }

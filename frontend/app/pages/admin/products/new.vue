@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import AdminProductForm from '~/components/admin/products/AdminProductForm.vue'
 import type { CategoriesResponse, StoreProductPayload } from '~/types/admin'
 
@@ -19,8 +20,9 @@ async function save(payload: StoreProductPayload) {
     dirty.value = false
     await navigateTo('/admin/products')
   }
-  catch (error: any) {
-    const data = error?.data?.data ?? error?.data
+  catch (err) {
+    const error = err as FetchError<{ data?: { errors?: Record<string, string[]>, message?: string }, errors?: Record<string, string[]>, message?: string }>
+    const data = error.data?.data ?? error.data
     serverErrors.value = data?.errors ?? {}
     formError.value = data?.message ?? 'Product could not be saved.'
   }

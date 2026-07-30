@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
 import AdminCategoryManager from '~/components/admin/products/AdminCategoryManager.vue'
 import AdminProductFilters from '~/components/admin/products/AdminProductFilters.vue'
 import AdminProductTable from '~/components/admin/products/AdminProductTable.vue'
@@ -23,8 +24,10 @@ const filters = computed(() => ({
 }))
 
 const apiQuery = computed(() => buildAdminQuery({ ...filters.value, per_page: 20 }))
-const { data: response, pending, error, refresh } = await useAdminProducts(apiQuery)
-const { data: categoryResponse } = await useAdminCategories()
+const productsRequest = useAdminProducts(apiQuery)
+const categoriesRequest = useAdminCategories()
+const { data: response, pending, error, refresh } = await productsRequest
+const { data: categoryResponse } = await categoriesRequest
 
 function updateFilter(key: string, value: string | number) {
   const query = { ...route.query, [key]: value || undefined }
@@ -47,8 +50,9 @@ async function confirmDelete() {
     deleteTarget.value = null
     await refresh()
   }
-  catch (error: any) {
-    actionError.value = error?.data?.message ?? 'Product could not be deleted.'
+  catch (err) {
+    const error = err as FetchError<{ message?: string }>
+    actionError.value = error.data?.message ?? 'Product could not be deleted.'
   }
   finally {
     deleting.value = false

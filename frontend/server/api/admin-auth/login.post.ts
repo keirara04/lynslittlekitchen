@@ -33,12 +33,14 @@ export default defineEventHandler(async (event) => {
         token: response.token,
       })
     }
-    finally {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'This account does not have admin access.',
-      })
+    catch {
+      // Non-admin access is denied regardless of whether the logout call succeeds.
     }
+
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'This account does not have admin access.',
+    })
   }
 
   setAdminToken(event, response.token, Boolean(body.remember))

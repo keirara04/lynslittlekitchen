@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import type { FetchError } from 'ofetch'
 
 interface LaravelRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -6,6 +7,8 @@ interface LaravelRequestOptions {
   query?: Record<string, unknown>
   token?: string
 }
+
+type FetchBody = BodyInit | Record<string, unknown> | null | undefined
 
 export async function requestLaravel<T>(
   event: H3Event,
@@ -19,23 +22,24 @@ export async function requestLaravel<T>(
     return await ($fetch(path, {
       baseURL: config.apiBase,
       method: options.method ?? 'GET',
-      body: options.body,
+      body: options.body as FetchBody,
       query: options.query,
       headers: {
         Accept: 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-    } as any) as Promise<T>)
+    }) as Promise<T>)
   }
-  catch (error: any) {
-    const statusCode = Number(error?.response?.status ?? error?.statusCode ?? 500)
-    const data = error?.data ?? error?.response?._data
+  catch (err) {
+    const error = err as FetchError<{ message?: string }>
+    const statusCode = Number(error.response?.status ?? error.statusCode ?? 500)
+    const data = error.data ?? error.response?._data
 
     if (statusCode === 401) clearAdminToken(event)
 
     throw createError({
       statusCode,
-      statusMessage: data?.message ?? error?.message ?? 'Laravel API request failed',
+      statusMessage: data?.message ?? error.message ?? 'Laravel API request failed',
       data,
     })
   }

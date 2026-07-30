@@ -1,3 +1,5 @@
+import type { FetchError } from 'ofetch'
+
 interface CloudinaryUploadResponse {
   secure_url: string
 }
@@ -30,8 +32,9 @@ export function useCloudinaryUpload() {
 
       return response.secure_url
     }
-    catch (err: any) {
-      error.value = err?.data?.error?.message ?? 'Image upload failed. Please try again.'
+    catch (err) {
+      const fetchError = err as FetchError<{ error?: { message?: string } }>
+      error.value = fetchError.data?.error?.message ?? 'Image upload failed. Please try again.'
       throw err
     }
     finally {

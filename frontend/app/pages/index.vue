@@ -2,7 +2,7 @@
 import { resolveProductImage } from '~/utils/storefront.mjs'
 import type { FeaturedProduct } from '~/composables/useStoreSettings'
 
-const { t, tm } = useI18n()
+const { t, tm, rt } = useI18n()
 const { data: products } = useCatalog()
 const featured = computed(() => products.value.slice(0, 6))
 
@@ -67,7 +67,10 @@ interface ProcessStep {
   text: string
 }
 
-const process = computed(() => tm('home.process') as unknown as ProcessStep[])
+const process = computed(() => {
+  const items = tm('home.process') as unknown as ProcessStep[]
+  return items.map(item => ({ title: rt(item.title), text: rt(item.text) }))
+})
 </script>
 
 <template>

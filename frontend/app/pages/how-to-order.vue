@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t, tm } = useI18n()
+const { t, tm, rt } = useI18n()
 
 useSeoMeta({
   title: "How to order | Lyn's Little Kitchen",
@@ -21,7 +21,11 @@ const stepMeta = [
 
 const steps = computed(() => {
   const translated = tm('howToOrder.steps') as unknown as OrderStep[]
-  return stepMeta.map((meta, index) => ({ ...meta, ...translated[index] }))
+  return stepMeta.map((meta, index) => ({
+    ...meta,
+    title: rt(translated[index]?.title ?? ''),
+    text: rt(translated[index]?.text ?? ''),
+  }))
 })
 </script>
 

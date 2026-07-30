@@ -45,6 +45,24 @@ export interface PaginatedProducts {
   meta?: Record<string, unknown>
 }
 
+export interface PublicOrder {
+  id: number
+  order_reference: string
+  total: number
+  delivery_fee: number
+  payment_status: 'unpaid' | 'paid' | 'refunded'
+  payment_proof_url: string | null
+  payment_proof_submitted_at: string | null
+  paid_at: string | null
+  order_status: string
+  allowed_next_statuses: string[]
+  delivery_method: 'delivery' | 'pickup'
+  delivery_address: string | null
+  delivery_date: string | null
+  notes: string | null
+  created_at: string
+}
+
 export interface CartLine {
   key: string
   productId: number

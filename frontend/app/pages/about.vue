@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t, tm } = useI18n()
+const { t, tm, rt } = useI18n()
 
 useSeoMeta({
   title: "About us | Lyn's Little Kitchen",
@@ -11,7 +11,10 @@ interface BakeryPromise {
   text: string
 }
 
-const promises = computed(() => tm('about.promises') as unknown as BakeryPromise[])
+const promises = computed(() => {
+  const items = tm('about.promises') as unknown as BakeryPromise[]
+  return items.map(item => ({ title: rt(item.title), text: rt(item.text) }))
+})
 </script>
 
 <template>
@@ -27,26 +30,28 @@ const promises = computed(() => tm('about.promises') as unknown as BakeryPromise
       </div>
 
       <figure class="about-hero__image">
-        <img
+        <NuxtImg
           src="/images/about/baking-hands.png"
           alt="Hands arranging freshly baked cookies on a well-used baking tray"
           width="1440"
           height="960"
-        >
+          format="webp"
+        />
         <figcaption>{{ t('about.heroCaption') }}</figcaption>
       </figure>
     </section>
 
     <section class="about-origin container-shell" aria-labelledby="origin-heading">
       <div class="about-origin__image-wrap">
-        <img
+        <NuxtImg
           class="about-origin__image"
           src="/images/about/cookie-close-up.png"
           alt="A freshly baked chocolate cookie broken open on a ceramic plate"
           width="1024"
           height="1024"
           loading="lazy"
-        >
+          format="webp"
+        />
       </div>
       <div class="about-origin__copy">
         <p class="about-kicker">{{ t('about.originKicker') }}</p>
@@ -88,14 +93,15 @@ const promises = computed(() => tm('about.promises') as unknown as BakeryPromise
           <NuxtLink to="/how-to-order" class="btn-ghost">{{ t('nav.howToOrder') }} <span aria-hidden="true">→</span></NuxtLink>
         </div>
       </div>
-      <img
+      <NuxtImg
         class="about-closing__image"
         src="/images/about/packing-orders.png"
         alt="Hands packing a box of freshly baked cookies at a kitchen table"
         width="1440"
         height="1080"
         loading="lazy"
-      >
+        format="webp"
+      />
     </section>
 
     <section class="about-note container-shell" aria-labelledby="note-heading">

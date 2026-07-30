@@ -34,18 +34,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 });
 
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/delivery-zones', [DeliveryZoneController::class, 'index']);
-
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{slug}', [ProductController::class, 'show']);
+Route::middleware('throttle:60,1')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/delivery-zones', [DeliveryZoneController::class, 'index']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{slug}', [ProductController::class, 'show']);
+    Route::get('/payment-info', [PaymentController::class, 'info']);
+    Route::get('/store-settings', [SettingController::class, 'show']);
+});
 
 Route::middleware('throttle:20,1')->post('/orders', [OrderController::class, 'store']);
 Route::middleware('throttle:20,1')->get('/orders/{reference}', [OrderController::class, 'show']);
 Route::middleware('throttle:20,1')->post('/orders/{reference}/payment-proof', [OrderController::class, 'submitProof']);
-
-Route::get('/payment-info', [PaymentController::class, 'info']);
-Route::get('/store-settings', [SettingController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/categories', [AdminCategoryController::class, 'index']);

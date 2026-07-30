@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
+
 const { t } = useI18n()
 
 useSeoMeta({ title: "Checkout | Lyn's Little Kitchen" })
@@ -103,8 +105,9 @@ async function placeOrder() {
     })
     confirmation.value = response.data
   }
-  catch (error: any) {
-    submitError.value = error?.data?.message || t('checkout.errors.orderFailed')
+  catch (err) {
+    const error = err as FetchError<{ message?: string }>
+    submitError.value = error.data?.message || t('checkout.errors.orderFailed')
   }
   finally {
     submitting.value = false
@@ -147,8 +150,9 @@ async function submitProof() {
     proofSubmitted.value = true
     cart.clear()
   }
-  catch (error: any) {
-    proofError.value = error?.data?.message || t('checkout.errors.proofFailed')
+  catch (err) {
+    const error = err as FetchError<{ message?: string }>
+    proofError.value = error.data?.message || t('checkout.errors.proofFailed')
   }
   finally {
     proofSubmitting.value = false

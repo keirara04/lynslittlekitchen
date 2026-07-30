@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatRinggit, getOrderProgress } from '~/utils/storefront.mjs'
+import type { PublicOrder } from '~/types/catalog'
 
 const { t, tm } = useI18n()
 
@@ -9,7 +10,7 @@ const reference = ref(String(route.query.reference || ''))
 const phone = ref(String(route.query.phone || ''))
 const pending = ref(false)
 const errorMessage = ref('')
-const order = ref<any>(null)
+const order = ref<PublicOrder | null>(null)
 const statusKeys = ['pending', 'preparing', 'baking', 'packing', 'out_for_delivery', 'completed']
 const statuses = computed(() => {
   const labels = tm('trackOrder.statuses') as unknown as string[]
@@ -27,7 +28,7 @@ async function lookup() {
   }
   pending.value = true
   try {
-    const response = await useApiFetch<{ data: any }>(`/orders/${encodeURIComponent(reference.value.trim())}`, {
+    const response = await useApiFetch<{ data: PublicOrder }>(`/orders/${encodeURIComponent(reference.value.trim())}`, {
       query: { phone: phone.value.trim() },
     })
     order.value = response.data

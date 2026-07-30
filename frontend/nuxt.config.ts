@@ -8,12 +8,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-  modules: [
-    '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@nuxtjs/i18n',
-    '@nuxtjs/sitemap',
-  ],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/sitemap', '@nuxt/eslint', '@nuxt/image'],
 
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || 'https://lynslittlekitchen.vercel.app',
@@ -21,6 +16,12 @@ export default defineNuxtConfig({
 
   sitemap: {
     exclude: ['/admin/**'],
+  },
+
+  routeRules: {
+    '/': { swr: 3600 },
+    '/about': { swr: 3600 },
+    '/how-to-order': { swr: 3600 },
   },
 
   i18n: {

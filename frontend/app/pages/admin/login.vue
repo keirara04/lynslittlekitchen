@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
+
 definePageMeta({ layout: 'admin-auth' })
 
 const auth = useAdminAuthStore()
@@ -26,10 +28,11 @@ async function submit() {
       : '/admin'
     await navigateTo(redirect)
   }
-  catch (error: any) {
-    const data = error?.data?.data ?? error?.data
+  catch (err) {
+    const error = err as FetchError<{ data?: { errors?: Record<string, string[]>, message?: string }, errors?: Record<string, string[]>, message?: string }>
+    const data = error.data?.data ?? error.data
     fieldErrors.value = data?.errors ?? {}
-    errorMessage.value = data?.message ?? error?.statusMessage ?? 'Sign in failed. Check your details and try again.'
+    errorMessage.value = data?.message ?? error.statusMessage ?? 'Sign in failed. Check your details and try again.'
   }
   finally {
     busy.value = false
@@ -87,7 +90,7 @@ useSeoMeta({ title: "Admin sign in | Lyn's Little Kitchen", robots: 'noindex, no
     </div>
 
     <div class="admin-login-card__image-panel" aria-hidden="true">
-      <img src="/images/products/choc-chip-crunch-temp.png" alt="">
+      <NuxtImg src="/images/products/choc-chip-crunch-temp.png" alt="" format="webp" />
       <span class="admin-login-card__image-wash" />
     </div>
   </section>
